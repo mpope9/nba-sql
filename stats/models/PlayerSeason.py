@@ -1,21 +1,14 @@
 from peewee import *
-#from models import BaseModel
 
-class PlayerBios(Model):
-    season_id = CharField(null=True)  # added in at the end
-    player_id = IntegerField(null = True)
-    player_name = CharField(null = True)
-    team_id = IntegerField(null = True)
+class PlayerSeason(Model):
+    season_id = CharField(null=False, index=True)  # added in at the end
+    player_id = IntegerKey(null=False, index=True)
+    team_id = IntegerField(null=False, index=True) # TODO: ForeignKey
     team_abbreviation = CharField(null = True)
     age = IntegerField(null = True)
     player_height = CharField(null = True)
     player_height_inches = IntegerField(null = True)
     player_weight = CharField(null = True)
-    college = CharField(null = True)
-    country = CharField(null = True)
-    draft_year = CharField(null = True)
-    draft_round = CharField(null = True)
-    draft_number = CharField(null = True)
     gp = IntegerField(null = True)
     pts = FloatField(null = True)
     reb = FloatField(null = True)
@@ -28,4 +21,4 @@ class PlayerBios(Model):
     ast_pct = FloatField(null = True)
 	
     class Meta:
-        db_table = 'player_bios'
+        db_table = 'player_season'

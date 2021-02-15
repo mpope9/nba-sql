@@ -1,10 +1,10 @@
 from peewee import *
 
 class PlayerGeneralTraditionalTotals(Model):
-    season_id = CharField(null=True)
-    player_id = IntegerField(null=True)
-    player_name = CharField(null=True)
-    team_id = IntegerField(null=True)
+    season_id = CharField(null=False, index=True)
+    player_id = IntegerField(null=False, index=True)
+    team_id = IntegerField(null=False, index=True)
+    player_name = CharField(null=False)
     team_abbreviation = CharField(null=True)
     age = IntegerField(null=True)
     gp = IntegerField(null=True)

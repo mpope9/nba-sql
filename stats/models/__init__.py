@@ -9,5 +9,6 @@ from .TeamGeneralTraditional import TeamGeneralTraditional
 from .TeamGameLogs import TeamGameLogs
 
 # Misc Tables
-from .PlayerBios import PlayerBios
+from .Player import Player
+from .PlayerSeason import PlayerSeason
 from .PlayerGameLogs import PlayerGameLogs

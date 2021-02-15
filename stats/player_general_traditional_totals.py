@@ -17,11 +17,11 @@ class PlayerGeneralTraditionalTotalsRequester:
         self.settings = settings
         self.settings.db.bind([PlayerGeneralTraditionalTotals])
 
-    def create(self):
+    def create_ddl(self):
         """
         Initialize the table schema.
         """
-        settings.db.create_tables([PlayerGeneralTraditionalTotals], safe=True)
+        self.settings.db.create_tables([PlayerGeneralTraditionalTotals], safe=True)
 
     def populate_season(self, season_id):
         """
