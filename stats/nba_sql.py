@@ -7,10 +7,11 @@ description = """
     """
 
 from settings import Settings
-import constants
+from constants import season_list
 import argparse
 
-from models import PlayerGeneralTraditionalTotals
+from player_general_traditional_totals import PlayerGeneralTraditionalTotalsRequester
+
 from models import PlayerGameLogs
 from models import PlayerBios
 
@@ -45,19 +46,27 @@ def main():
 
     settings = Settings(database)
 
-    if create_schema:
-        do_create_schema(settings)
+    #player_bio_requester = PlayerBois(settings)
+    pgtt_requester = PlayerGeneralTraditionalTotalsRequester(settings)
 
-def do_create_schema(settings):
+    if create_schema:
+        do_create_schema(settings, pgtt_requester)
+
+    # TODO: Limit seasons with the flag.
+    for season_id in season_list:
+        print("Populating season: %s" % (season_id))
+        #player_bio_requester.populate_season(season_id)
+        pgtt_requester.populate_season(season_id)
+
+def do_create_schema(settings, pgtt_requester):
     """
     Function to initialize database schema.
     """
     print("Initializing schema.")
 
-    settings.db.bind([PlayerBios, PlayerGameLogs, PlayerGeneralTraditionalTotals])
     settings.db.create_tables([PlayerBios], safe=True)
     settings.db.create_tables([PlayerGameLogs], safe=True)
-    settings.db.create_tables([PlayerGeneralTraditionalTotals], safe=True)
+    pgtt_requester.create()
 
 if __name__ == "__main__":
     main()
