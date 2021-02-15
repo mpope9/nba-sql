@@ -1,7 +1,6 @@
 from peewee import *
-from models import BaseModel
 
-class PlayerGeneralTraditionalTotals(BaseModel):
+class PlayerGeneralTraditionalTotals(Model):
     season_id = CharField(null=True)
     player_id = IntegerField(null=True)
     player_name = CharField(null=True)

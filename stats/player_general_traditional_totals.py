@@ -3,6 +3,7 @@ import requests
 from settings import Settings
 from models import PlayerGeneralTraditionalTotals
 
+# TODO Remove
 settings = Settings()
 settings.db.create_tables([PlayerGeneralTraditionalTotals], safe=True)
 

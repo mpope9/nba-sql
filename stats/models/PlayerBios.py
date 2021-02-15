@@ -1,7 +1,7 @@
 from peewee import *
-from models import BaseModel
+#from models import BaseModel
 
-class PlayerBios(BaseModel):
+class PlayerBios(Model):
     season_id = CharField(null=True)  # added in at the end
     player_id = IntegerField(null = True)
     player_name = CharField(null = True)
