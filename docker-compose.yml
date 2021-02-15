@@ -1,0 +1,20 @@
+#
+# Development environment for the nba_sql application.
+# Thank you, superset, for the great template :)
+#
+version: "3.7"
+
+services:
+  db:
+    env_file: docker/.env
+    image: postgres:12
+    container_name: nba_sql_db
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - db_home:/var/lib/postgresql/data
+
+volumes:
+  db_home:
+    external: false
