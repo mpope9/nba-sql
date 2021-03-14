@@ -40,7 +40,8 @@ headers = {
     'Connection': 'keep-alive',
     'Accept': 'application/json, text/plain, */*',
     'x-nba-stats-token': 'true',
-    'User-Agent': 'Mozilla/5.0 (X11; Linux i686; rv:86.0) Gecko/20100101 Firefox/86.0',
+    #'User-Agent': 'Mozilla/5.0 (X11; Linux i686; rv:86.0) Gecko/20100101 Firefox/86.0',
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36',
     'x-nba-stats-origin': 'stats',
     'Sec-Fetch-Site': 'same-origin',
     'Sec-Fetch-Mode': 'cors',
@@ -92,28 +93,28 @@ is also the EventMsgActionField, which is a complex enum of
 We're going to make a lookup table of enum to value, then a lookup
 table for the (EventMsgType, EventMsgActionType) pair.
 """
-{
-    1:  'FIELD_GOAL_MADE',
-    2:  'FIELD_GOAL_MISSED',
-    3:  'FREE_THROW',
-    4:  'REBOUND',
-    5:  'TURNOVER',
-    6:  'FOUL',
-    7:  'VIOLATION',
-    8:  'SUBSTITUTION',
-    9:  'TIMEOUT',
-    10: 'JUMP_BALL',
-    11: 'EJECTION',
-    12: 'PERIOD_BEGIN',
-    13: 'PERIOD_END',
-    18: 'UNKNOWN',
-}
+event_message_types = [
+    {'id': 1,  'string': 'FIELD_GOAL_MADE'},
+    {'id': 2,  'string': 'FIELD_GOAL_MISSED'},
+    {'id': 3,  'string': 'FREE_THROW'},
+    {'id': 4,  'string': 'REBOUND'},
+    {'id': 5,  'string': 'TURNOVER'},
+    {'id': 6,  'string': 'FOUL'},
+    {'id': 7,  'string': 'VIOLATION'},
+    {'id': 8,  'string': 'SUBSTITUTION'},
+    {'id': 9,  'string': 'TIMEOUT'},
+    {'id': 10, 'string': 'JUMP_BALL'},
+    {'id': 11, 'string': 'EJECTION'},
+    {'id': 12, 'string': 'PERIOD_BEGIN'},
+    {'id': 13, 'string': 'PERIOD_END'},
+    {'id': 18, 'string': 'UNKNOWN'}
+]
 
-{
-    1: {
-        1: 'JUMP_SHOT', # TODO Distinguish between 2pt and 3pt jump shot
-        2: ''
-    },
-    2: {
-    }
-}
+#event_action_types = {
+#    1: {
+#        1: 'JUMP_SHOT', # TODO Distinguish between 2pt and 3pt jump shot
+#        2: ''
+#    },
+#    2: {
+#    }
+#}

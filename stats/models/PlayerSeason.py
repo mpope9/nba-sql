@@ -4,7 +4,11 @@ from . import Team
 
 class PlayerSeason(Model):
 
-    ## Composite PK Fields
+    ## Defaulting to auto generated id column. We do this because
+    ## team_id is nullable for players in a season and that breaks the
+    ## team table's Primary Key constraint.
+
+    ## Composite Unique Index
     player_id = ForeignKeyField(Player, index=True)
     season_id = IntegerField(null=False, index=True)
     team_id = ForeignKeyField(Team, index=True, null=True)
@@ -26,8 +30,6 @@ class PlayerSeason(Model):
 	
     class Meta:
         db_table = 'player_season'
-        primary_key = CompositeKey(
-            'player_id',
-            'season_id',
-            'team_id'
+        indexes = (
+            (('player_id', 'season_id', 'team_id'), True),
         )
