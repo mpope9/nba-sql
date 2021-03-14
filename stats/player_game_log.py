@@ -23,6 +23,8 @@ class PlayerGameLogRequester:
         """
         Build GET REST request to the NBA for a season, iterate over the results,
         store in the database.
+
+        Returns a set of game_ids.
         """
         params = self.build_params(season_id)
 
@@ -36,10 +38,13 @@ class PlayerGameLogRequester:
 
         rows = []
 
+        game_ids = {}
+
         # looping over data to insert into table
         for row in player_info:
+            game_ids.add(row[6])
             new_row = {
-                'season_id': row[0],
+                'season_id': int(season_id[:4]),
                 'player_id': row[1],
                 'team_id': row[3],
                 'game_id': row[6],
@@ -75,6 +80,7 @@ class PlayerGameLogRequester:
             rows.append(new_row)
 
         PlayerGameLog.insert_many(rows).execute()
+        return game_ids
 
     def build_params(self, season_id):
         """

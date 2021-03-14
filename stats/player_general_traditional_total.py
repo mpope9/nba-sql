@@ -41,7 +41,7 @@ class PlayerGeneralTraditionalTotalRequester:
 
         for row in player_info:
             new_row = {
-                'season_id': season_id, # this is key, need this to join and sort by seasons
+                'season_id': int(season_id[:4]),
                 'player_id': row[0],
                 'team_id': row[2],
                 'age': row[4],

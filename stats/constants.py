@@ -84,3 +84,36 @@ team_ids = [
     1610612765, #'DET'
     1610612766, #'CHA'
 ]
+
+"""
+Play-by-play data has an EventMsgType field. This is an enum. There
+is also the EventMsgActionField, which is a complex enum of 
+(EventMsgType, SubType).
+We're going to make a lookup table of enum to value, then a lookup
+table for the (EventMsgType, EventMsgActionType) pair.
+"""
+{
+    1:  'FIELD_GOAL_MADE',
+    2:  'FIELD_GOAL_MISSED',
+    3:  'FREE_THROW',
+    4:  'REBOUND',
+    5:  'TURNOVER',
+    6:  'FOUL',
+    7:  'VIOLATION',
+    8:  'SUBSTITUTION',
+    9:  'TIMEOUT',
+    10: 'JUMP_BALL',
+    11: 'EJECTION',
+    12: 'PERIOD_BEGIN',
+    13: 'PERIOD_END',
+    18: 'UNKNOWN',
+}
+
+{
+    1: {
+        1: 'JUMP_SHOT', # TODO Distinguish between 2pt and 3pt jump shot
+        2: ''
+    },
+    2: {
+    }
+}

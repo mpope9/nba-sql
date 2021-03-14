@@ -4,11 +4,9 @@ from . import Team
 
 class PlayerGeneralTraditionalTotal(Model):
 
-    ## See `PlayerSeason` model for the comment on this...
-
-    ## Composite Unique Index Fields
+    ## Composite PK Fields
     player_id = ForeignKeyField(Player, null=False, index=True)
-    season_id = CharField(null=False, index=True)
+    season_id = IntegerField(null=False, index=True)
     team_id = ForeignKeyField(Team, index=True, null=True)
 
     age = IntegerField(null=True)
@@ -75,6 +73,8 @@ class PlayerGeneralTraditionalTotal(Model):
 
     class Meta:
         db_table = 'player_general_traditional_total'
-        indexes = (
-            (('player_id', 'season_id', 'team_id'), True),
+        primary_key = CompositeKey(
+            'player_id',
+            'season_id',
+            'team_id'
         )

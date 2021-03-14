@@ -4,18 +4,9 @@ from . import Team
 
 class PlayerSeason(Model):
 
-    ## Default to auto generated id column here, because
-    ## a player could belong to multiple teams in a season (not unique)
-    ## and team_id is also nullable (which makes it unique).
-    ## A nullable foreign key as part of a composite primary key 
-    ## is a bit too gnarly, so we're going to have a 
-    ## unique composite index.
-
-    ## Is this the right way to do this? Should we just get rid of this table?
-
-    ## Composite Unique Index Fields
+    ## Composite PK Fields
     player_id = ForeignKeyField(Player, index=True)
-    season_id = CharField(null=False, index=True)
+    season_id = IntegerField(null=False, index=True)
     team_id = ForeignKeyField(Team, index=True, null=True)
 
     age = IntegerField(null=True)
@@ -35,6 +26,8 @@ class PlayerSeason(Model):
 	
     class Meta:
         db_table = 'player_season'
-        indexes = (
-            (('player_id', 'season_id', 'team_id'), True),
+        primary_key = CompositeKey(
+            'player_id',
+            'season_id',
+            'team_id'
         )
