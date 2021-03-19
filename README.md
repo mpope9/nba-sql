@@ -10,6 +10,8 @@ Big shoutout to BurntSushi's (nbadb)[https://github.com/BurntSushi/nfldb]. It wa
 
 [A good place for more information is the wiki](https://github.com/mpope9/nba-sql/wiki).
 
+It will take an estimated 3 hours to build the whole database. Around 10 mins if play-by-play data isn't desired.
+
 The following environment variables must be set. There are no commandline arguments to specify these. The following example are connection details for the provided docker-compose database:
 ```
 DB_NAME="nba"

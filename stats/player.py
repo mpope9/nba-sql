@@ -25,6 +25,15 @@ class PlayerRequester:
         """
         self.settings.db.create_tables([Player], safe=True)
 
+    def get_id_set(self):
+        """
+        Gets a set of ids for caching.
+        """
+        s = set()
+        for player in Player.select(Player.player_id):
+            s.add(player.player_id)
+        return s
+
     def add_player(self, season_id):
         """
         Build GET REST request to the NBA for a season.

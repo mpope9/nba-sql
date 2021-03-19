@@ -6,10 +6,12 @@ description = """
         python3 stats/nba_sql.py
     """
 
-from settings import Settings
 from constants import season_list, team_ids
+from settings import Settings
+import concurrent.futures
 import argparse
 import time
+import copy
 
 from team import TeamRequester
 from player import PlayerRequester
@@ -76,22 +78,22 @@ def main():
     pgtt_requester = PlayerGeneralTraditionalTotalRequester(settings)
     play_by_play_requester = PlayByPlayRequester(settings)
 
-    #do_create_schema(
-    #    create_schema, 
-    #    player_requester, 
-    #    player_season_requester, 
-    #    player_game_log_requester,
-    #    play_by_play_requester,
-    #    pgtt_requester,
-    #    team_requester,
-    #    event_message_type_builder)
+    do_create_schema(
+        create_schema, 
+        player_requester, 
+        player_season_requester, 
+        player_game_log_requester,
+        play_by_play_requester,
+        pgtt_requester,
+        team_requester,
+        event_message_type_builder)
 
-    #populate_base_tables(
-    #    do_base_tables, 
-    #    request_gap, 
-    #    team_requester, 
-    #    player_requester, 
-    #    event_message_type_builder)
+    populate_base_tables(
+        do_base_tables, 
+        request_gap, 
+        team_requester, 
+        player_requester, 
+        event_message_type_builder)
 
     season_bar = progress_bar(
         season_list, 
@@ -99,17 +101,17 @@ def main():
         suffix='This one will take a while...',
         length=len(season_list))
 
-    # Load seasonal data.
-    #for season_id in season_bar:
+    # Load seasonal data for NBA teams only.
+    for season_id in season_bar:
 
-    #    player_game_log_requester.populate_season(season_id)
-    #    time.sleep(.2)
+        player_game_log_requester.populate_season(season_id)
+        time.sleep(request_gap)
 
-    #    player_season_requester.populate_season(season_id)
-    #    time.sleep(request_gap)
+        player_season_requester.populate_season(season_id)
+        time.sleep(request_gap)
 
-    #    pgtt_requester.populate_season(season_id)
-    #    time.sleep(request_gap)
+        pgtt_requester.populate_season(season_id)
+        time.sleep(request_gap)
 
     game_list = player_game_log_requester.get_game_ids()
     game_progress_bar = progress_bar(
@@ -118,12 +120,27 @@ def main():
         suffix='This one will take a while...',
         length=30)
 
+    ## Load game data.
+    player_id_set = player_requester.get_id_set()
+    rows = []
 
-    # Load game data.
-    for game in game_progress_bar:
-        
-        play_by_play_requester.populate_season(game.game_id)
-        time.sleep(request_gap)
+    ## Okay so this takes a really long time due to rate limiting and over 25K games.
+    ## Best we can do so far is batch the rows into groups of 100K and insert them in a
+    ## different thread.
+    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
+        for game in game_progress_bar:
+            new_rows = play_by_play_requester.fetch_game(game.game_id)
+            rows += new_rows
+
+            if len(rows) > 100000:
+                ## We should be good for the race condition here.
+                ## It takes a wee bit to insert 100K rows.
+                copy_list = copy.deepcopy(rows)
+                executor.submit(play_by_play_requester.insert_batch, copy_list, player_id_set)
+                rows = []
+            time.sleep(request_gap)
+
+    print("Done! Enjoy the hot, fresh database.")
 
 def do_create_schema(create_schema, player_requester, player_season_requester, 
     player_game_log_requester, play_by_play_requester, pgtt_requester, team_requester,

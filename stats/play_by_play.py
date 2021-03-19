@@ -3,7 +3,7 @@ import urllib.parse
 import json
 
 from settings import Settings
-from models import PlayByPlay
+from models import PlayByPlay, Player
 from constants import season_list, headers
 
 class PlayByPlayRequester:
@@ -20,10 +20,9 @@ class PlayByPlayRequester:
         """
         self.settings.db.create_tables([PlayByPlay], safe=True)
 
-    def populate_season(self, game_id):
+    def fetch_game(self, game_id):
         """
-        Build GET REST request to the NBA for a game, iterate over the results,
-        store in the database.
+        Build GET REST request to the NBA for a game, iterate over the results and return them.
         """
         params = self.build_params(game_id)
 
@@ -37,7 +36,7 @@ class PlayByPlayRequester:
 
         rows = []
 
-        # looping over data to insert into table
+        # looping over data to return.
         for row in player_info:
             new_row = {
                 'game_id': row[0],
@@ -51,15 +50,32 @@ class PlayByPlayRequester:
                 'visitor_description': row[9],
                 'score': row[10],
                 'score_margin': row[11],
-                'player1_id': row[13],
-                'player1_team_id': row[15],
-                'player2_id': row[20],
-                'player2_team_id': row[22],
-                'player3_id': row[27],
-                'player3_team_id': row[29]
+                'player1_id': self.get_null_id(row[13]),
+                'player1_team_id': self.get_null_id(row[15]),
+                'player2_id': self.get_null_id(row[20]),
+                'player2_team_id': self.get_null_id(row[22]),
+                'player3_id': self.get_null_id(row[27]),
+                'player3_team_id': self.get_null_id(row[29])
             }
-            rows.append(new_row)
 
+            rows.append(new_row)
+        return rows
+
+    def insert_batch(self, rows, player_id_set):
+        """
+        Batch insertion of records.
+        """
+
+        ## It looks like the NBA API returns some bad data that 
+        ## doesn't conform to their advertized schema. (team_id in the player_id spot).
+        ## We can maybe get away with ignoring it.
+        ## Check if id is in player_id cache.
+        ## We need to preserve the row in general becuase it could still have good data
+        ## for the correctly returned players.
+        for row in rows:
+            for key in ['player1_id', 'player2_id', 'player3_id']:
+                if row[key] != None and row[key] not in player_id_set:
+                    row[key] = None
         PlayByPlay.insert_many(rows).execute()
 
     def build_params(self, game_id):
@@ -71,3 +87,12 @@ class PlayByPlayRequester:
             'GameId': game_id,
             'StartPeriod': 1
         }
+
+    def get_null_id(self, id):
+        """
+        This endpoint will return a player's id or player's team id as 0 sometimes. 
+        We will store 'null', as 0 breaks the foriegn key constraint.
+        """
+        if id is 0:
+            return None
+        return id

@@ -1,6 +1,7 @@
 import requests
 import urllib.parse
 
+from peewee import fn
 from settings import Settings
 from models import PlayerGameLog
 from constants import season_list, headers
@@ -23,7 +24,7 @@ class PlayerGameLogRequester:
         """
         Returns a query containing the game_ids stored in the database.
         """
-        return PlayerGameLog.select(PlayerGameLog.game_id)
+        return PlayerGameLog.select(fn.Distinct(PlayerGameLog.game_id))
 
     def populate_season(self, season_id):
         """
@@ -94,7 +95,7 @@ class PlayerGameLogRequester:
             'DateTo': '',
             'GameSegment': '',
             'LastNGames': '',
-            'LeagueID': '', 
+            'LeagueID': '00', 
             'Location': '',
             'MeasureType': '',
             'Month': '',
@@ -106,7 +107,7 @@ class PlayerGameLogRequester:
             'PlayerID': '',
             'Season': season_id,
             'SeasonSegment': '',
-            'SeasonType': '',
+            'SeasonType': 'Regular Season',
             'ShotClockRange': '',
             'TeamID': '',
             'VsConference': '',
