@@ -131,7 +131,7 @@ def main():
     game_list = [game[1] for game in game_set] ## Fetch ids from tuples.
     game_progress_bar = progress_bar(
         game_list, 
-        prefix='Loading Game Data',
+        prefix='Loading PlayByPlay Data',
         length=30)
 
     ## Load game dependent data.
@@ -155,6 +155,7 @@ def main():
             time.sleep(request_gap)
 
     ## Finally store player_game_log data after loading came data.
+    print("Storing player_game_log table.")
     player_game_log_requester.store_rows()
 
     season_bar = progress_bar(
@@ -171,8 +172,6 @@ def main():
 
         pgtt_requester.populate_season(season_id)
         time.sleep(request_gap)
-
-    print("Storing player_game_log table.")
 
     print("Done! Enjoy the hot, fresh database.")
 
