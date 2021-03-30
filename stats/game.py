@@ -36,6 +36,15 @@ class GameBuilder:
             away_team = split[0]
             home_team = split[1]
 
+            ## TODO Support these.
+            if home_team not in team_abbrev_mapping:
+                print("Unsupported team abbreviation: %s" % home_team)
+                continue
+
+            if away_team not in team_abbrev_mapping:
+                print("Unsupported team abbreviation: %s" % away_team)
+                continue
+
             new_row = {
                 'game_id': game_id,
                 'team_id_home': team_abbrev_mapping[home_team],

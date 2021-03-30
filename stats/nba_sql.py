@@ -67,6 +67,13 @@ def main():
     create_schema = args.create_schema
     request_gap = float(args.request_gap)
     do_base_tables = args.do_base_tables
+    season = args.season
+
+    seasons = []
+    if season is not None:
+        seasons.append(season)
+    else:
+        seasons = season_list
 
     settings = Settings(database)
 
@@ -103,7 +110,7 @@ def main():
     #    event_message_type_builder)
 
     season_bar = progress_bar(
-        season_list, 
+        seasons,
         prefix='Loading Seasonal Data',
         suffix='This one will take a while...',
         length=30)
@@ -125,7 +132,6 @@ def main():
     game_set = player_game_log_requester.get_game_set()
     print('Loading cached game table.')
     game_builder.populate_table(game_set)
-    game_builder.set_game_set(set())
 
     game_list = player_game_log_requester.get_game_ids()
     game_progress_bar = progress_bar(
@@ -185,7 +191,7 @@ def populate_base_tables(do_base_tables, request_gap, team_requester, player_req
         length=30)
 
     player_bar = progress_bar(
-        season_list, 
+        seasons, 
         prefix='player Table Loading',
         suffix='',
         length=30)
