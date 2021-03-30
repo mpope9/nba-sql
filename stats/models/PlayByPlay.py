@@ -2,11 +2,12 @@ from peewee import *
 from . import EventMessageType
 from . import Player
 from . import Team
+from . import Game
 
 class PlayByPlay(Model):
 
     ## Indexes
-    game_id = IntegerField(index=True)
+    game_id = ForeignKeyField(Game, index=True)
 
     event_num = IntegerField()
     event_msg_type = ForeignKeyField(EventMessageType, index=True)

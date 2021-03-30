@@ -1,11 +1,12 @@
 from peewee import *
 from . import Team
+from . import Game
 
 class TeamGameLog(Model):
 
     ## Composite PK Fields
     team_id = ForeignKeyField(Team, index=True)
-    game_id = IntegerField(index=True)
+    game_id = ForeignKeyField(Game, index=True)
 
     ## Indexes
     season_id = IntegerField(index=True)
