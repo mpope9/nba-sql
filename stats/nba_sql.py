@@ -102,12 +102,13 @@ def main():
     ]
     do_create_schema(create_schema, object_list)
 
-    #populate_base_tables(
-    #    do_base_tables,
-    #    request_gap,
-    #    team_requester,
-    #    player_requester,
-    #    event_message_type_builder)
+    populate_base_tables(
+        do_base_tables,
+        seasons,
+        request_gap,
+        team_requester,
+        player_requester,
+        event_message_type_builder)
 
     season_bar = progress_bar(
         seasons,
@@ -122,11 +123,11 @@ def main():
         player_game_log_requester.populate_season(season_id)
         time.sleep(request_gap)
 
-    #    player_season_requester.populate_season(season_id)
-    #    time.sleep(request_gap)
+        player_season_requester.populate_season(season_id)
+        time.sleep(request_gap)
 
-    #    pgtt_requester.populate_season(season_id)
-    #    time.sleep(request_gap)
+        pgtt_requester.populate_season(season_id)
+        time.sleep(request_gap)
 
     ## First, load game specific data.
     game_set = player_game_log_requester.get_game_set()
@@ -175,7 +176,7 @@ def do_create_schema(create_schema, object_list):
     for obj in object_list:
         obj.create_ddl()
 
-def populate_base_tables(do_base_tables, request_gap, team_requester, player_requester, 
+def populate_base_tables(do_base_tables, seasons, request_gap, team_requester, player_requester, 
     event_message_type_builder):
     """
     Populates base tables.
