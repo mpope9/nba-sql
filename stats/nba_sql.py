@@ -110,23 +110,17 @@ def main():
         player_requester,
         event_message_type_builder)
 
-    season_bar = progress_bar(
+    player_game_seasons_bar = progress_bar(
         seasons,
-        prefix='Loading Seasonal Data',
+        prefix='Loading player_game_log season Data',
         suffix='This one will take a while...',
         length=30)
 
     player_game_log_rows = []
-    ## Load seasonal data.
-    for season_id in season_bar:
+    # Fetch player_game_log and build game_id set.
+    for season_id in player_game_seasons_bar:
 
-        player_game_log_requester.populate_season(season_id)
-        time.sleep(request_gap)
-
-        player_season_requester.populate_season(season_id)
-        time.sleep(request_gap)
-
-        pgtt_requester.populate_season(season_id)
+        player_game_log_requester.fetch_season(season_id)
         time.sleep(request_gap)
 
     ## First, load game specific data.
@@ -134,13 +128,11 @@ def main():
     print('Loading cached game table.')
     game_builder.populate_table(game_set)
 
-    game_list = player_game_log_requester.get_game_ids()
+    game_list = [game[1] for game in game_set] ## Fetch ids from tuples.
     game_progress_bar = progress_bar(
         game_list, 
         prefix='Loading Game Data',
         length=30)
-
-    ## Next load fetched seasonal data that depends on the game table.
 
     ## Load game dependent data.
     player_id_set = player_requester.get_id_set()
@@ -150,8 +142,8 @@ def main():
     ## Best we can do so far is batch the rows into groups of 100K and insert them in a
     ## different thread.
     with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
-        for game in game_progress_bar:
-            new_rows = play_by_play_requester.fetch_game(game.game_id)
+        for game_id in game_progress_bar:
+            new_rows = play_by_play_requester.fetch_game(game_id)
             rows += new_rows
 
             if len(rows) > 100000:
@@ -161,6 +153,26 @@ def main():
                 executor.submit(play_by_play_requester.insert_batch, copy_list, player_id_set)
                 rows = []
             time.sleep(request_gap)
+
+    ## Finally store player_game_log data after loading came data.
+    player_game_log_requester.store_rows()
+
+    season_bar = progress_bar(
+        seasons,
+        prefix='Loading Seasonal Data',
+        suffix='This one will take a while...',
+        length=30)
+
+    ## Load seasonal data.
+    for season_id in player_game_seasons_bar:
+
+        player_season_requester.populate_season(season_id)
+        time.sleep(request_gap)
+
+        pgtt_requester.populate_season(season_id)
+        time.sleep(request_gap)
+
+    print("Storing player_game_log table.")
 
     print("Done! Enjoy the hot, fresh database.")
 

@@ -16,6 +16,7 @@ class PlayerGameLogRequester:
 
     url = 'https://stats.nba.com/stats/playergamelogs'
     game_set = set()
+    rows = []
 
     def __init__(self, settings):
         self.settings = settings
@@ -27,17 +28,17 @@ class PlayerGameLogRequester:
         """
         self.settings.db.create_tables([PlayerGameLog], safe=True)
 
-    def get_game_ids(self):
-        """
-        Returns a query containing the game_ids stored in the database.
-        """
-        return PlayerGameLog.select(fn.Distinct(PlayerGameLog.game_id))
-
     def get_game_set(self):
         """
-        Returns the built set for the game table.
+        Returns a the set of game ids.
         """
         return self.game_set
+
+    def get_rows(self):
+        """
+        Returns the stored row list, to be inserted after the game data.
+        """
+        return self.rows
 
     def set_game_set(self, set_new):
         """
@@ -45,7 +46,7 @@ class PlayerGameLogRequester:
         """
         self.game_set = set_new
 
-    def populate_season(self, season_id):
+    def fetch_season(self, season_id):
         """
         Build GET REST request to the NBA for a season, iterate over the results,
         store in the database.
@@ -60,8 +61,6 @@ class PlayerGameLogRequester:
         # pulling just the data we want
         player_info = response['resultSets'][0]['rowSet']
 
-        rows = []
-
         season_int = int(season_id[:4])
 
         # looping over data to insert into table
@@ -75,7 +74,7 @@ class PlayerGameLogRequester:
                 'season_id': season_int,
                 'player_id': row[1],
                 'team_id': row[3],
-                'game_id': row[6],
+                'game_id': int(row[6]),
                 'wl': row[9],
                 'min': row[10],
                 'fgm': row[11],
@@ -103,9 +102,14 @@ class PlayerGameLogRequester:
                 'dd2': row[33],
                 'td3': row[34]
             }
-            rows.append(new_row)
+            self.rows.append(new_row)
 
-        PlayerGameLog.insert_many(rows).execute()
+    def store_rows(self):
+        """
+        Stores the rows that have been fetched.
+        """
+        PlayerGameLog.insert_many(self.rows).execute()
+        self.rows = [] # Is this how to 'free' memory?
 
     def build_params(self, season_id):
         """
