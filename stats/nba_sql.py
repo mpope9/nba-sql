@@ -239,7 +239,9 @@ def progress_bar(iterable, prefix = '', suffix = '', decimals = 1, length = 100,
     fill        - Optional  : bar fill character (Str)
     printEnd    - Optional  : end character (e.g. "\r", "\r\n") (Str)
     """
-    total = len(iterable)
+    total = 1
+    if iterable:
+        total = len(iterable)
     # Progress Bar Printing Function
     def printProgressBar (iteration):
         percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))

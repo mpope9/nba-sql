@@ -65,42 +65,41 @@ class PlayerGameLogRequester:
 
         # looping over data to insert into table
         for row in player_info:
-
             # Checking matchup for home team.
-            if '@' in row[8]:
-                self.game_set.add((season_int, row[6], row[7], row[8]))
+            if '@' in row[9]:
+                self.game_set.add((season_int, row[7], row[8], row[9]))
 
             new_row = {
                 'season_id': season_int,
                 'player_id': row[1],
-                'team_id': row[3],
-                'game_id': int(row[6]),
-                'wl': row[9],
-                'min': row[10],
-                'fgm': row[11],
-                'fga': row[12],
-                'fg_pct': row[13],
-                'fg3m': row[14],
-                'fg3a': row[15],
-                'fg3_pct': row[16],
-                'ftm': row[17],
-                'fta': row[18],
-                'ft_pct': row[19],
-                'oreb': row[20],
-                'dreb': row[21],
-                'reb': row[22],
-                'ast': row[23],
-                'tov': row[24],
-                'stl': row[25],
-                'blk': row[26],
-                'blka': row[27],
-                'pf': row[28],
-                'pfd': row[29],
-                'pts': row[30],
-                'plus_minus': row[31],
-                'nba_fantasy_pts': row[32],
-                'dd2': row[33],
-                'td3': row[34]
+                'team_id': row[4],
+                'game_id': int(row[7]),
+                'wl': row[10],
+                'min': row[11],
+                'fgm': row[12],
+                'fga': row[13],
+                'fg_pct': row[14],
+                'fg3m': row[15],
+                'fg3a': row[16],
+                'fg3_pct': row[17],
+                'ftm': row[18],
+                'fta': row[19],
+                'ft_pct': row[20],
+                'oreb': row[21],
+                'dreb': row[22],
+                'reb': row[23],
+                'ast': row[24],
+                'tov': row[25],
+                'stl': row[26],
+                'blk': row[27],
+                'blka': row[28],
+                'pf': row[29],
+                'pfd': row[30],
+                'pts': row[31],
+                'plus_minus': row[32],
+                'nba_fantasy_pts': row[33],
+                'dd2': row[34],
+                'td3': row[35]
             }
             self.rows.append(new_row)
 
