@@ -165,7 +165,7 @@ def main():
         length=30)
 
     ## Load seasonal data.
-    for season_id in player_game_seasons_bar:
+    for season_id in season_bar:
 
         player_season_requester.populate_season(season_id)
         time.sleep(request_gap)
