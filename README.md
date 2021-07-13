@@ -51,6 +51,7 @@ WHERE player.player_name = 'Russell Westbrook';
 * player_season
 * team_game_log
 * team_season
+* player_general_traditional_total (Also referred to in short as pgtt)
 
 An up-to-date ER diagram can be found in [`image/NBA-ER.jpg`](https://github.com/mpope9/nba-sql/blob/master/image/NBA-ER.jpg).
 
@@ -81,9 +82,9 @@ The entrypoint is `stats/nba_sql.py`. To see the available arguments, you can us
 python stats/nba_sql.py -h
 ```
 
-To create the schema, use the `--create_schema`. Example:
+To create the schema, use the `--create-schema`. Example:
 ```bash
-pyhton stats/nba_sql.py --create_schema=True
+pyhton stats/nba_sql.py --create-schema
 ```
 
 To enable a Postgres database, use the `--database` flag. Example:
@@ -91,9 +92,16 @@ To enable a Postgres database, use the `--database` flag. Example:
 python stats/nba_sql.py --database="postgres"
 ```
 
-We have added a half second delay between making requests to the NBA stats API. To configure the amount of time use the `--time_between_requests` flag.
+We have added a half second delay between making requests to the NBA stats API. To configure the amount of time use the `--time-between-requests` flag.
 ```bash
-python stats/nba_sql.py --time_between_requests=.5
+python stats/nba_sql.py --time-between-requests=.5
+```
+
+The script `nba_sql.py` adds several tables into the database. Loading these tables takes time, notably, the `play_by_play` table. 
+Some of these tables can be skipped by using the `--skip-tables` CLI option. Example:
+
+```bash
+python stats/nba_sq.py --create-schema --database postgres --skip-tables play_by_play pgtt
 ```
 
 ### :computer: Local development
