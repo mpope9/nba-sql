@@ -36,29 +36,33 @@ def main():
             The format of the season should be in the form "YYYY-YY".
             """)
 
-    parser.add_argument('--base_tables', dest='do_base_tables', default=True,
+    parser.add_argument('--skip-base-tables', action="store_true", default=False,
         help="""
-            Flag to designate filling the 'base' tables, which are player and team.
+            Flag to skip loading the 'base' tables, which are player and team.
             Useful if one already has an initialized database and only wants to fill/update
             a season.
             """)
 
-    parser.add_argument('--create_schema', dest='create_schema', default=False, 
+    parser.add_argument('--create-schema', dest='create_schema', action="store_true", default=False, 
         help="""
-            The create_schema flag is used to initialize the database schema before loading data.
+            Flag to initialize the database schema before loading data.
             """)
 
-    parser.add_argument('--database', dest='database', default='mysql', 
+    parser.add_argument('--database', dest='database', default='mysql', choices=['mysql', 'postgres'],
         help="""
-            The dtatbase flag specifies which database protocol to use. 
+            The database flag specifies which database protocol to use. 
             Defaults to "mysql", but also accepts "postgres".
             """)
 
-    parser.add_argument('--time_between_requests', dest='request_gap', default='.5',
+    parser.add_argument('--time-between-requests', dest='request_gap', default='.5',
         help="""
             This flag exists to prevent rate limiting, and we inject a sleep inbetween requesting
             resources.
             """)
+    
+    parser.add_argument('--skip-tables', action='store', nargs="*", default=[],
+        choices=['player_season', 'player_game_log', 'play_by_play', 'pgtt'],
+        help="Use this option to skip loading certain tables. Example: --skip-tables play_by_play pgtt")
 
     args = parser.parse_args()
 
@@ -66,8 +70,9 @@ def main():
     database = args.database
     create_schema = args.create_schema
     request_gap = float(args.request_gap)
-    do_base_tables = args.do_base_tables
+    skip_base_tables = args.skip_base_tables
     season = args.season
+    skip_tables = args.skip_tables
 
     seasons = []
     if season is not None:
@@ -100,15 +105,17 @@ def main():
         play_by_play_requester,
         pgtt_requester
     ]
-    do_create_schema(create_schema, object_list)
 
-    populate_base_tables(
-        do_base_tables,
-        seasons,
-        request_gap,
-        team_requester,
-        player_requester,
-        event_message_type_builder)
+    if create_schema:
+        do_create_schema(object_list)
+
+    if not skip_base_tables:
+        populate_base_tables(
+            seasons,
+            request_gap,
+            team_requester,
+            player_requester,
+            event_message_type_builder)
 
     player_game_seasons_bar = progress_bar(
         seasons,
@@ -116,7 +123,6 @@ def main():
         suffix='This one will take a while...',
         length=30)
 
-    player_game_log_rows = []
     # Fetch player_game_log and build game_id set.
     for season_id in player_game_seasons_bar:
 
@@ -134,29 +140,31 @@ def main():
         prefix='Loading PlayByPlay Data',
         length=30)
 
-    ## Load game dependent data.
-    player_id_set = player_requester.get_id_set()
-    rows = []
+    if 'play_by_play' not in skip_tables:
+        ## Load game dependent data.
+        player_id_set = player_requester.get_id_set()
+        rows = []
 
-    ## Okay so this takes a really long time due to rate limiting and over 25K games.
-    ## Best we can do so far is batch the rows into groups of 100K and insert them in a
-    ## different thread.
-    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
-        for game_id in game_progress_bar:
-            new_rows = play_by_play_requester.fetch_game(game_id)
-            rows += new_rows
+        ## Okay so this takes a really long time due to rate limiting and over 25K games.
+        ## Best we can do so far is batch the rows into groups of 100K and insert them in a
+        ## different thread.
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
+            for game_id in game_progress_bar:
+                new_rows = play_by_play_requester.fetch_game(game_id)
+                rows += new_rows
 
-            if len(rows) > 100000:
-                ## We should be good for the race condition here.
-                ## It takes a wee bit to insert 100K rows.
-                copy_list = copy.deepcopy(rows)
-                executor.submit(play_by_play_requester.insert_batch, copy_list, player_id_set)
-                rows = []
-            time.sleep(request_gap)
+                if len(rows) > 100000:
+                    ## We should be good for the race condition here.
+                    ## It takes a wee bit to insert 100K rows.
+                    copy_list = copy.deepcopy(rows)
+                    executor.submit(play_by_play_requester.insert_batch, copy_list, player_id_set)
+                    rows = []
+                time.sleep(request_gap)
 
-    ## Finally store player_game_log data after loading came data.
-    print("Storing player_game_log table.")
-    player_game_log_requester.store_rows()
+    if 'player_game_log' not in skip_tables:
+        ## Finally store player_game_log data after loading game data.
+        print("Storing player_game_log table.")
+        player_game_log_requester.store_rows()
 
     season_bar = progress_bar(
         seasons,
@@ -166,35 +174,30 @@ def main():
 
     ## Load seasonal data.
     for season_id in season_bar:
+        if 'player_season' not in skip_tables:
+            player_season_requester.populate_season(season_id)
+            time.sleep(request_gap)
 
-        player_season_requester.populate_season(season_id)
-        time.sleep(request_gap)
-
-        pgtt_requester.populate_season(season_id)
-        time.sleep(request_gap)
+        if 'pgtt' not in skip_tables:
+            pgtt_requester.populate_season(season_id)
+            time.sleep(request_gap)
 
     print("Done! Enjoy the hot, fresh database.")
 
-def do_create_schema(create_schema, object_list):
+def do_create_schema(object_list):
     """
     Function to initialize database schema.
     """
-    if not create_schema:
-        return
-
     print("Initializing schema.")
 
     for obj in object_list:
         obj.create_ddl()
 
-def populate_base_tables(do_base_tables, seasons, request_gap, team_requester, player_requester, 
-    event_message_type_builder):
+def populate_base_tables(seasons, request_gap, team_requester, player_requester, event_message_type_builder):
     """
     Populates base tables.
     """
-
-    if not do_base_tables:
-        return
+    print('Populating base tables')
 
     team_bar = progress_bar(
         team_ids, 
