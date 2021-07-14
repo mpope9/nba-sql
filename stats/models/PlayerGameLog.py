@@ -1,25 +1,26 @@
 from peewee import (
     ForeignKeyField,
     IntegerField,
-    CharField,
     FloatField,
     Model,
-    CompositeKey
+    CompositeKey,
+    FixedCharField
 )
 from . import Player
 from . import Team
 from . import Game
 
+
 class PlayerGameLog(Model):
-    
-    ## Composite PK Fields
+
+    # Composite PK Fields
     player_id = ForeignKeyField(Player, index=True)
     game_id = ForeignKeyField(Game, null=True)
 
-    ## Foreign Keys
+    # Foreign Keys
     team_id = ForeignKeyField(Team, index=True)
 
-    ## Indexes
+    # Indexes
     season_id = IntegerField(index=True)
 
     wl = FixedCharField(null=True, max_length=1)

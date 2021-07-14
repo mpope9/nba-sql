@@ -4,9 +4,10 @@ from peewee import (
     Model,
 )
 
+
 class Team(Model):
 
-    ## Primary Key
+    # Primary Key
     team_id = IntegerField(primary_key=True)
 
     abbreviation = CharField(null=True)

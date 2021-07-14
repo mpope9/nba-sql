@@ -4,16 +4,20 @@ from . import Player
 from . import Team
 from . import Game
 
+
 class PlayByPlay(Model):
 
-    ## Indexes
+    # Indexes
     game_id = ForeignKeyField(Game, index=True)
 
     event_num = IntegerField()
     event_msg_type = ForeignKeyField(EventMessageType, index=True)
     event_msg_action_type = IntegerField(index=True)
     period = IntegerField()
-    wc_time = CharField() # Why not time field? WELL, some times like "24:11 PM" are returned.
+
+    # Why not time field? WELL, some times like "24:11 PM" are returned.
+    wc_time = CharField()
+
     home_description = CharField(null=True)
     neutral_description = CharField(null=True)
     visitor_description = CharField(null=True)

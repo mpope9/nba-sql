@@ -1,5 +1,6 @@
 from peewee import IntegerField, CharField, Model
 
+
 class EventMessageType(Model):
 
     id = IntegerField(primary_key=True)

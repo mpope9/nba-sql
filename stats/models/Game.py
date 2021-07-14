@@ -1,21 +1,22 @@
 from peewee import (
-    ForeignKeyField, 
-    IntegerField, 
-    DateField, 
+    ForeignKeyField,
+    IntegerField,
+    DateField,
     Model
 )
 from . import Team
 
+
 class Game(Model):
 
-    ## Primary Key
+    # Primary Key
     game_id = IntegerField(primary_key=True)
 
-    ## Foreign Keys
+    # Foreign Keys
     team_id_home = ForeignKeyField(Team, index=True, null=False)
     team_id_away = ForeignKeyField(Team, index=True, null=False)
 
-    ## Indexes
+    # Indexes
     season_id = IntegerField(index=True, null=False)
 
     date = DateField(null=False)

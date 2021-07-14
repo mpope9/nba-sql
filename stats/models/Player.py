@@ -4,6 +4,7 @@ from peewee import (
     Model
 )
 
+
 class Player(Model):
 
     player_id = IntegerField(primary_key=True)

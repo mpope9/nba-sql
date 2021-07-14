@@ -8,13 +8,14 @@ from peewee import (
 from . import Player
 from . import Team
 
+
 class PlayerGeneralTraditionalTotal(Model):
 
-    ## Defaulting to auto generated id column. We do this because
-    ## team_id is nullable for players in a season and that breaks the
-    ## team table's Primary Key constraint.
+    # Defaulting to auto generated id column. We do this because
+    # team_id is nullable for players in a season and that breaks the
+    # team table's Primary Key constraint.
 
-    ## Composite Unique Index
+    # Composite Unique Index
     player_id = ForeignKeyField(Player, null=False, index=True)
     season_id = IntegerField(null=False, index=True)
     team_id = ForeignKeyField(Team, index=True, null=True)
