@@ -1,10 +1,9 @@
 import requests
 import urllib.parse
-import json
 
-from settings import Settings
-from models import PlayByPlay, Player
-from constants import season_list, headers
+from models import PlayByPlay
+from constants import headers
+
 
 class PlayByPlayRequester:
 
@@ -22,14 +21,19 @@ class PlayByPlayRequester:
 
     def fetch_game(self, game_id):
         """
-        Build GET REST request to the NBA for a game, iterate over the results and return them.
+        Build GET REST request to the NBA for a game, iterate over
+        the results and return them.
         """
         params = self.build_params(game_id)
 
         # Encode without safe '+', apparently the NBA likes unsafe url params.
         params_str = urllib.parse.urlencode(params, safe=':+')
 
-        response = requests.get(url=self.url, headers=headers, params=params_str).json()
+        response = (
+            requests
+            .get(url=self.url, headers=headers, params=params_str)
+            .json()
+        )
 
         # pulling just the data we want
         player_info = response['resultSets'][0]['rowSet']
@@ -66,16 +70,18 @@ class PlayByPlayRequester:
         Batch insertion of records.
         """
 
-        ## It looks like the NBA API returns some bad data that 
-        ## doesn't conform to their advertized schema. (team_id in the player_id spot).
-        ## We can maybe get away with ignoring it.
-        ## Check if id is in player_id cache.
-        ## We need to preserve the row in general becuase it could still have good data
-        ## for the correctly returned players.
+        # It looks like the NBA API returns some bad data that
+        # doesn't conform to their advertized schema:
+        # (team_id in the player_id spot).
+        # We can maybe get away with ignoring it.
+        # Check if id is in player_id cache.
+        # We need to preserve the row in general becuase it could still have
+        # good data for the correctly returned players.
+
         for row in rows:
             for key in ['player1_id', 'player2_id', 'player3_id']:
-                if row[key] != None and row[key] not in player_id_set:
-                    row[key] = None
+                if row[key] is not None and row[key] not in player_id_set:
+                    row[key] is None
         PlayByPlay.insert_many(rows).execute()
 
     def build_params(self, game_id):
@@ -90,9 +96,10 @@ class PlayByPlayRequester:
 
     def get_null_id(self, id):
         """
-        This endpoint will return a player's id or player's team id as 0 sometimes. 
-        We will store 'null', as 0 breaks the foriegn key constraint.
+        This endpoint will return a player's id or player's team id as 0
+        sometimes.  We will store 'null', as 0 breaks the foriegn key
+        constraint.
         """
-        if id is 0:
+        if id == 0:
             return None
         return id

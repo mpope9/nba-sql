@@ -1,23 +1,31 @@
-"""
-Singleton settings instance.
-"""
+from peewee import (
+    PostgresqlDatabase,
+    MySQLDatabase
+)
 
 import os
 from dotenv import load_dotenv
 load_dotenv()
 
-from peewee import *
+"""
+Singleton settings instance.
+"""
 
 DB_NAME = os.getenv('DB_NAME')
 DB_HOST = os.getenv('DB_HOST')
 DB_USER = os.getenv('DB_USER')
 DB_PASSWORD = os.getenv('DB_PASSWORD')
 
+
 class Settings:
 
     def __init__(self, database):
 
-        self.user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.82 Safari/537.36"
+        self.user_agent = (
+            "Mozilla/5.0 (X11; Linux x86_64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.82"
+            "Safari/537.36"
+        )
 
         if database == "postgres":
             print("Connecting to postgres database.")

@@ -40,8 +40,11 @@ headers = {
     'Connection': 'keep-alive',
     'Accept': 'application/json, text/plain, */*',
     'x-nba-stats-token': 'true',
-    #'User-Agent': 'Mozilla/5.0 (X11; Linux i686; rv:86.0) Gecko/20100101 Firefox/86.0',
-    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36',
+    'User-Agent': (
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) '
+        'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130'
+        'Safari/537.36'
+    ),
     'x-nba-stats-origin': 'stats',
     'Sec-Fetch-Site': 'same-origin',
     'Sec-Fetch-Mode': 'cors',
@@ -129,10 +132,9 @@ team_abbrev_mapping = {
 }
 
 
-
 """
 Play-by-play data has an EventMsgType field. This is an enum. There
-is also the EventMsgActionField, which is a complex enum of 
+is also the EventMsgActionField, which is a complex enum of
 (EventMsgType, SubType).
 We're going to make a lookup table of enum to value, then a lookup
 table for the (EventMsgType, EventMsgActionType) pair.
@@ -153,12 +155,3 @@ event_message_types = [
     {'id': 13, 'string': 'PERIOD_END'},
     {'id': 18, 'string': 'UNKNOWN'}
 ]
-
-#event_action_types = {
-#    1: {
-#        1: 'JUMP_SHOT', # TODO Distinguish between 2pt and 3pt jump shot
-#        2: ''
-#    },
-#    2: {
-#    }
-#}

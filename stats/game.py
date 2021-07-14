@@ -1,9 +1,6 @@
-import requests
-import urllib.parse
-
-from settings import Settings
 from models import Game
-from constants import headers, team_abbrev_mapping
+from constants import team_abbrev_mapping
+
 
 class GameBuilder:
 
@@ -30,13 +27,13 @@ class GameBuilder:
             game_date = item[2]
             matchup_in = item[3]
 
-            ## A bit of a hack. We shouldn't rely on data in requests
-            ## because it could change and invalidate this logic.
+            # A bit of a hack. We shouldn't rely on data in requests
+            # because it could change and invalidate this logic.
             split = matchup_in.split(" @ ")
             away_team = split[0]
             home_team = split[1]
 
-            ## TODO Support these.
+            # TODO Support these.
             if home_team not in team_abbrev_mapping:
                 print("Unsupported team abbreviation: %s" % home_team)
                 continue

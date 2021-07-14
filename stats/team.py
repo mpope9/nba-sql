@@ -1,9 +1,8 @@
 import requests
-import urllib.parse
 
-from settings import Settings
 from models import Team
-from constants import season_list, headers
+from constants import headers
+
 
 class TeamRequester:
 
@@ -27,13 +26,17 @@ class TeamRequester:
     def add_team(self, team_id):
         """
         Build GET Request for the team id.
-        Since we're in the context of a single team, we'll assemble rows one at a time
-        then do a bulk insert at the end.
+        Since we're in the context of a single team, we'll assemble rows
+        one at a time then do a bulk insert at the end.
         """
         params = {'TeamID': team_id}
 
-	    # json response
-        response = requests.get(url=self.team_details_url, headers=headers, params=params).json()
+        # json response
+        response = (
+            requests
+            .get(url=self.team_details_url, headers=headers, params=params)
+            .json()
+        )
 
         # pulling just the data we want
         team_detail = response['resultSets'][0]['rowSet']

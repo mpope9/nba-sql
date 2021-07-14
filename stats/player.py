@@ -1,9 +1,9 @@
 import requests
 import urllib.parse
 
-from settings import Settings
 from models import Player
-from constants import season_list, headers
+from constants import headers
+
 
 class PlayerRequester:
 
@@ -37,16 +37,20 @@ class PlayerRequester:
     def add_player(self, season_id):
         """
         Build GET REST request to the NBA for a season.
-        Since we're in the context of a single player, we'll assemble rows one at a time
-        then do a bulk insert at the end.
+        Since we're in the context of a single player, we'll assemble
+        rows one at a time then do a bulk insert at the end.
         """
         params = self.build_params(season_id)
 
         # Encode without safe '+', apparently the NBA likes unsafe url params.
         params_str = urllib.parse.urlencode(params, safe=':+')
 
-	    # json response
-        response = requests.get(url=self.player_info_url, headers=headers, params=params_str).json()
+        # json response
+        response = (
+            requests
+            .get(url=self.player_info_url, headers=headers, params=params_str)
+            .json()
+        )
 
         # pulling just the data we want
         player_info = response['resultSets'][0]['rowSet']

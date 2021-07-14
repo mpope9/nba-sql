@@ -1,17 +1,18 @@
 import requests
 import urllib.parse
 
-from peewee import fn
-from settings import Settings
 from models import PlayerGameLog
-from constants import season_list, headers
+from constants import headers
+
 
 class PlayerGameLogRequester:
     """
-    This class builds player game data from a season. As an optimization, we also
-    build a set of game data. This is so we can build the game table without having to
-    make a request for every game. We probably shouldn't do this, as this relys on data
-    from the endpoint and if that changes this logic also must. But its fine for now...
+    This class builds player game data from a season.
+    As an optimization, we also build a set of game data.
+    This is so we can build the game table without having to
+    make a request for every game. We probably shouldn't
+    do this, as this relys on data from the endpoint and if that
+    changes this logic also must. But its fine for now...
     """
 
     url = 'https://stats.nba.com/stats/playergamelogs'
@@ -48,7 +49,8 @@ class PlayerGameLogRequester:
 
     def fetch_season(self, season_id):
         """
-        Build GET REST request to the NBA for a season, iterate over the results,
+        Build GET REST request to the NBA for a season,
+        iterate over the results,
         store in the database.
         """
         params = self.build_params(season_id)
@@ -56,7 +58,11 @@ class PlayerGameLogRequester:
         # Encode without safe '+', apparently the NBA likes unsafe url params.
         params_str = urllib.parse.urlencode(params, safe=':+')
 
-        response = requests.get(url=self.url, headers=headers, params=params_str).json()
+        response = (
+            requests
+            .get(url=self.url, headers=headers, params=params_str)
+            .json()
+        )
 
         # pulling just the data we want
         player_info = response['resultSets'][0]['rowSet']
@@ -108,7 +114,9 @@ class PlayerGameLogRequester:
         Stores the rows that have been fetched.
         """
         PlayerGameLog.insert_many(self.rows).execute()
-        self.rows = [] # Is this how to 'free' memory?
+
+        # Is this how to 'free' memory?
+        self.rows = []
 
     def build_params(self, season_id):
         """
@@ -119,7 +127,7 @@ class PlayerGameLogRequester:
             'DateTo': '',
             'GameSegment': '',
             'LastNGames': '',
-            'LeagueID': '00', 
+            'LeagueID': '00',
             'Location': '',
             'MeasureType': '',
             'Month': '',

@@ -1,6 +1,6 @@
-
 from models import EventMessageType
 from constants import event_message_types
+
 
 class EventMessageTypeBuilder:
 
