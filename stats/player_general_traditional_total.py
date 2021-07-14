@@ -2,7 +2,7 @@ import requests
 import urllib.parse
 
 from models import PlayerGeneralTraditionalTotal
-from constants import season_list, headers
+from constants import headers
 
 class PlayerGeneralTraditionalTotalRequester:
 

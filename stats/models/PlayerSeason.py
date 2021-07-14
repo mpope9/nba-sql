@@ -1,4 +1,10 @@
-from peewee import *
+from peewee import (
+    ForeignKeyField,
+    IntegerField,
+    CharField,
+    FloatField,
+    Model
+)
 from . import Player
 from . import Team
 

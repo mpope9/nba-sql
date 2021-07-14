@@ -1,4 +1,4 @@
-from peewee import *
+from peewee import ForeignKeyField, IntegerField, CharField, Model
 from . import EventMessageType
 from . import Player
 from . import Team

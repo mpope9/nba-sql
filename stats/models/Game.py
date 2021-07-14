@@ -1,4 +1,9 @@
-from peewee import *
+from peewee import (
+    ForeignKeyField, 
+    IntegerField, 
+    DateField, 
+    Model
+)
 from . import Team
 
 class Game(Model):
