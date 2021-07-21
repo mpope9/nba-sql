@@ -3,6 +3,7 @@ import urllib.parse
 
 from models import PlayerGameLog
 from constants import headers
+from game import GameEntry
 
 
 class PlayerGameLogRequester:
@@ -58,11 +59,7 @@ class PlayerGameLogRequester:
         # Encode without safe '+', apparently the NBA likes unsafe url params.
         params_str = urllib.parse.urlencode(params, safe=':+')
 
-        response = (
-            requests
-            .get(url=self.url, headers=headers, params=params_str)
-            .json()
-        )
+        response = requests.get(url=self.url, headers=headers, params=params_str).json()
 
         # pulling just the data we want
         player_info = response['resultSets'][0]['rowSet']
@@ -73,7 +70,14 @@ class PlayerGameLogRequester:
         for row in player_info:
             # Checking matchup for home team.
             if '@' in row[9]:
-                self.game_set.add((season_int, row[7], row[8], row[9]))
+                if row[10] == "W":
+                    winner = row[4]
+                    loser = ""
+                else:
+                    winner = ""
+                    loser = row[4]
+                self.game_set.add(GameEntry(season_id=season_int, game_id=row[7], game_date=row[8], matchup_in=row[9],
+                                            winner=winner, loser=loser))
 
             new_row = {
                 'season_id': season_int,

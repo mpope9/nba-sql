@@ -1,5 +1,9 @@
 from models import Game
 from constants import team_abbrev_mapping
+from collections import namedtuple
+
+
+GameEntry = namedtuple("GameEntry", "season_id, game_id, game_date, matchup_in, winner, loser")
 
 
 class GameBuilder:
@@ -17,38 +21,37 @@ class GameBuilder:
     def populate_table(self, game_set):
         """
         Takes a set of tuples and builds the game table.
+        @params:
+        game_set   - Required  : Set of GameEntry namedtuple entries (Set)
         """
-
         rows = []
 
-        for item in game_set:
-            season_id = item[0]
-            game_id = item[1]
-            game_date = item[2]
-            matchup_in = item[3]
-
+        for entry in game_set:
             # A bit of a hack. We shouldn't rely on data in requests
             # because it could change and invalidate this logic.
-            split = matchup_in.split(" @ ")
-            away_team = split[0]
-            home_team = split[1]
+            away_team, home_team = entry.matchup_in.split(" @ ")
 
-            # TODO Support these.
-            if home_team not in team_abbrev_mapping:
-                print("Unsupported team abbreviation: %s" % home_team)
+            try:
+                new_row = {
+                    'game_id': entry.game_id,
+                    'team_id_home': team_abbrev_mapping[home_team],
+                    'team_id_away': team_abbrev_mapping[away_team],
+                    'season_id': entry.season_id,
+                    'date': entry.game_date
+                }
+            except KeyError as e:
+                # TODO Support these.
+                print(f"Unsupported team abbreviation: {e.args[0]}")
                 continue
 
-            if away_team not in team_abbrev_mapping:
-                print("Unsupported team abbreviation: %s" % away_team)
-                continue
+            teams = [new_row['team_id_away'], new_row['team_id_home']]
+            if entry.winner:
+                new_row['team_id_winner'] = entry.winner
+                new_row['team_id_loser'] = teams[teams.index(entry.winner) - 1]
+            else:
+                new_row['team_id_loser'] = entry.loser
+                new_row['team_id_winner'] = teams[teams.index(entry.loser) - 1]
 
-            new_row = {
-                'game_id': game_id,
-                'team_id_home': team_abbrev_mapping[home_team],
-                'team_id_away': team_abbrev_mapping[away_team],
-                'season_id': season_id,
-                'date': game_date
-            }
             rows.append(new_row)
 
         Game.insert_many(rows).execute()

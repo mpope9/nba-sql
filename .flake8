@@ -1,0 +1,19 @@
+[flake8]
+count=True
+filename=*.py
+exclude =
+  .git,
+  .conf,
+  __pycache__,
+  build,
+  dist,
+  .gitignore
+  .flake8,
+  *.md,
+  *.egg-info,
+  *.ini,
+  *.conf,
+  *.yaml,
+  *.yml,
+  *.txt
+max-line-length=120

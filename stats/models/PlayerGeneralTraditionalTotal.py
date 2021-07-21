@@ -23,7 +23,7 @@ class PlayerGeneralTraditionalTotal(Model):
     age = IntegerField(null=True)
     gp = IntegerField(null=True)
     w = IntegerField(null=True)
-    l = IntegerField(null=True)
+    l = IntegerField(null=True) # NOQA
     w_pct = FloatField(null=True)
     min = FloatField(null=True)
     fgm = FloatField(null=True)
