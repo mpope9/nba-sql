@@ -54,7 +54,6 @@ class TeamRequester:
         """
         Bulk insert teams.
         """
-        print(f"{self.rows}")
         Team.insert_many(self.rows).execute()
 
     def get_required_fields(self):
