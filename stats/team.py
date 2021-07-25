@@ -1,4 +1,5 @@
 import requests
+from utils import get_rowset_mapping
 
 from models import Team
 from constants import headers
@@ -32,22 +33,20 @@ class TeamRequester:
         params = {'TeamID': team_id}
 
         # json response
-        response = (
-            requests
-            .get(url=self.team_details_url, headers=headers, params=params)
-            .json()
-        )
+        response = requests.get(url=self.team_details_url, headers=headers, params=params).json()
 
-        # pulling just the data we want
-        team_detail = response['resultSets'][0]['rowSet']
+        result_sets = response['resultSets'][0]
+        team_detail = result_sets['rowSet']
+
+        fields_mapping = get_rowset_mapping(result_sets, self.get_required_fields())
 
         for row in team_detail:
             new_row = {
-                'team_id': row[0],
-                'abbreviation': row[1],
-                'nickname': row[2],
-                'year_founded': row[3],
-                'city': row[4]
+                'team_id': row[fields_mapping[0]],
+                'abbreviation': row[fields_mapping[1]],
+                'nickname': row[fields_mapping[2]],
+                'year_founded': row[fields_mapping[3]],
+                'city': row[fields_mapping[4]]
             }
             self.rows.append(new_row)
 
@@ -55,4 +54,24 @@ class TeamRequester:
         """
         Bulk insert teams.
         """
+        print(f"{self.rows}")
         Team.insert_many(self.rows).execute()
+
+    def get_required_fields(self):
+        """
+        Get list of required fields to pull from the result set headers.
+        """
+        return [
+            'TEAM_ID', 
+            'ABBREVIATION', 
+            'NICKNAME', 
+            'YEARFOUNDED', 
+            'CITY', 
+            'ARENA', 
+            'ARENACAPACITY', 
+            'OWNER', 
+            'GENERALMANAGER', 
+            'HEADCOACH', 
+            'DLEAGUEAFFILIATION'
+        ]
+
