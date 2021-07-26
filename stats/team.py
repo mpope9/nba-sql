@@ -61,16 +61,15 @@ class TeamRequester:
         Get list of required fields to pull from the result set headers.
         """
         return [
-            'TEAM_ID', 
-            'ABBREVIATION', 
-            'NICKNAME', 
-            'YEARFOUNDED', 
-            'CITY', 
-            'ARENA', 
-            'ARENACAPACITY', 
-            'OWNER', 
-            'GENERALMANAGER', 
-            'HEADCOACH', 
+            'TEAM_ID',
+            'ABBREVIATION',
+            'NICKNAME',
+            'YEARFOUNDED',
+            'CITY',
+            'ARENA',
+            'ARENACAPACITY',
+            'OWNER',
+            'GENERALMANAGER',
+            'HEADCOACH',
             'DLEAGUEAFFILIATION'
         ]
-

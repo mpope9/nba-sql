@@ -2,6 +2,7 @@
 Misc utitilities.
 """
 
+
 def get_rowset_mapping(result_sets, required_fields):
     """
     Returns a list of mapped fields to the passed headers.
