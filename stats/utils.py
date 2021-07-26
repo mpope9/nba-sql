@@ -1,5 +1,5 @@
 """
-Misc utitilities.
+Misc utilities.
 """
 
 
