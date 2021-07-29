@@ -1,5 +1,5 @@
 import requests
-from utils import get_rowset_mapping
+from utils import get_rowset_mapping, column_names_from_columns
 
 from models import Team
 from constants import headers
@@ -38,16 +38,12 @@ class TeamRequester:
         result_sets = response['resultSets'][0]
         team_detail = result_sets['rowSet']
 
-        fields_mapping = get_rowset_mapping(result_sets, self.get_required_fields())
+        column_names = column_names_from_columns(self.settings.db, 'team')
+
+        column_mapping = get_rowset_mapping(result_sets, column_names)
 
         for row in team_detail:
-            new_row = {
-                'team_id': row[fields_mapping[0]],
-                'abbreviation': row[fields_mapping[1]],
-                'nickname': row[fields_mapping[2]],
-                'year_founded': row[fields_mapping[3]],
-                'city': row[fields_mapping[4]]
-            }
+            new_row = {column_name: row[row_index] for column_name, row_index in column_mapping.items()}
             self.rows.append(new_row)
 
     def populate(self):
@@ -55,21 +51,3 @@ class TeamRequester:
         Bulk insert teams.
         """
         Team.insert_many(self.rows).execute()
-
-    def get_required_fields(self):
-        """
-        Get list of required fields to pull from the result set headers.
-        """
-        return [
-            'TEAM_ID',
-            'ABBREVIATION',
-            'NICKNAME',
-            'YEARFOUNDED',
-            'CITY',
-            'ARENA',
-            'ARENACAPACITY',
-            'OWNER',
-            'GENERALMANAGER',
-            'HEADCOACH',
-            'DLEAGUEAFFILIATION'
-        ]
