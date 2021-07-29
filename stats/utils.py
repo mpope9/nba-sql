@@ -9,8 +9,8 @@ def get_rowset_mapping(result_sets, column_names):
     """
 
     headers = result_sets['headers']
-
     return {column: headers.index(column.upper()) for column in column_names}
+
 
 def column_names_from_columns(db, table_name):
     """
