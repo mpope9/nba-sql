@@ -146,7 +146,8 @@ def main():
         do_create_schema(object_list)
 
     if not skip_base_tables:
-        populate_base_tables( seasons,
+        populate_base_tables(
+            seasons,
             request_gap,
             team_requester,
             player_requester,
