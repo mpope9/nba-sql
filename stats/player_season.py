@@ -1,11 +1,13 @@
 import requests
 import urllib.parse
 
+from utils import get_rowset_mapping, column_names_from_table, season_id_to_int
 from models import PlayerSeason
+from general_requester import GenericRequester
 from constants import headers
 
 
-class PlayerSeasonRequester:
+class PlayerSeasonRequester(GenericRequester):
 
     per_mode = 'Totals'
     player_info_url = 'http://stats.nba.com/stats/leaguedashplayerbiostats'
@@ -15,19 +17,13 @@ class PlayerSeasonRequester:
         Constructor. Attach settings internally and bind the model to the
         database.
         """
-        self.settings = settings
-        self.settings.db.bind([PlayerSeason])
-
-    def create_ddl(self):
-        """
-        Initialize the table schema.
-        """
-        self.settings.db.create_tables([PlayerSeason], safe=True)
+        super().__init__(settings, self.player_info_url, PlayerSeason)
 
     def populate_season(self, season_id):
         """
         Build GET REST request to the NBA for a season, iterate over the
         results, store in the database.
+        We cannot rely on the base table's generic method, due to the `season_id` field.
         """
         params = self.build_params(season_id)
 
@@ -35,40 +31,21 @@ class PlayerSeasonRequester:
         params_str = urllib.parse.urlencode(params, safe=':+')
 
         # json response
-        response = (
-            requests
-            .get(url=self.player_info_url, headers=headers, params=params_str)
-            .json()
-        )
+        response = requests.get(url=self.url, headers=headers, params=params_str).json()
 
-        # pulling just the data we want
-        player_info = response['resultSets'][0]['rowSet']
+        result_sets = response['resultSets'][0]
+        rowset = result_sets['rowSet']
 
-        rows = []
+        column_names = column_names_from_table(self.settings.db, self.table._meta.table_name)
 
-        # looping over data to insert into table
-        for row in player_info:
-            new_row = {
-                'season_id': int(season_id[:4]),
-                'player_id': row[0],
-                'team_id': row[2],
-                'age': row[4],
-                'player_height': row[5],
-                'player_height_inches': row[6],
-                'player_weight': row[7],
-                'gp': row[13],
-                'pts': row[14],
-                'reb': row[15],
-                'ast': row[16],
-                'net_rating': row[17],
-                'oreb_pct': row[18],
-                'dreb_pct': row[19],
-                'usg_pct': row[20],
-                'ts_pct': row[21],
-                'ast_pct': row[22]
-            }
-            rows.append(new_row)
-        PlayerSeason.insert_many(rows).execute()
+        column_mapping = get_rowset_mapping(result_sets, column_names)
+
+        for row in rowset:
+            new_row = {column_name: row[row_index] for column_name, row_index in column_mapping.items()}
+            new_row['season_id'] = season_id_to_int(season_id)
+            self.rows.append(new_row)
+
+        super().populate()
 
     def build_params(self, season_id):
         """

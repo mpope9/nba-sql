@@ -82,7 +82,7 @@ def main():
     parser.add_argument(
         '--time-between-requests',
         dest='request_gap',
-        default='.5',
+        default='.7',
         help="""
             This flag exists to prevent rate limiting,
             and we inject a sleep inbetween requesting resources.
@@ -146,8 +146,7 @@ def main():
         do_create_schema(object_list)
 
     if not skip_base_tables:
-        populate_base_tables(
-            seasons,
+        populate_base_tables( seasons,
             request_gap,
             team_requester,
             player_requester,
@@ -206,6 +205,7 @@ def main():
         # Finally store player_game_log data after loading game data.
         print("Storing player_game_log table.")
         player_game_log_requester.store_rows()
+        time.sleep(request_gap)
 
     season_bar = progress_bar(
         seasons,
@@ -220,7 +220,7 @@ def main():
             time.sleep(request_gap)
 
         if 'pgtt' not in skip_tables:
-            pgtt_requester.populate_season(season_id)
+            pgtt_requester.generate_rows(season_id)
             time.sleep(request_gap)
 
     print("Done! Enjoy the hot, fresh database.")
@@ -236,41 +236,26 @@ def do_create_schema(object_list):
         obj.create_ddl()
 
 
-def populate_base_tables(
-    seasons,
-    request_gap,
-    team_requester,
-    player_requester,
-    event_message_type_builder
-):
+def populate_base_tables(seasons, request_gap, team_requester, player_requester, event_message_type_builder):
     """
     Populates base tables.
     """
     print('Populating base tables')
 
-    team_bar = progress_bar(
-        team_ids,
-        prefix='team Table Loading',
-        suffix='',
-        length=30)
-
-    player_bar = progress_bar(
-        seasons,
-        prefix='player Table Loading',
-        suffix='',
-        length=30)
+    team_bar = progress_bar(team_ids, prefix='team Table Loading', suffix='', length=30)
+    player_bar = progress_bar(seasons, prefix='player Table Loading', suffix='', length=30)
 
     # Load team data.
     print('Populating team data')
     for team_id in team_bar:
-        team_requester.add_team(team_id)
+        team_requester.generate_rows(team_id)
         time.sleep(request_gap)
     team_requester.populate()
 
     # Load player data.
     print('Populating player data')
     for season_id in player_bar:
-        player_requester.add_player(season_id)
+        player_requester.generate_rows(season_id)
         time.sleep(request_gap)
     player_requester.populate()
 
@@ -278,15 +263,7 @@ def populate_base_tables(
     event_message_type_builder.initialize()
 
 
-def progress_bar(
-    iterable,
-    prefix='',
-    suffix='',
-    decimals=1,
-    length=100,
-    fill='█',
-    printEnd="\r"
-):
+def progress_bar(iterable, prefix='', suffix='', decimals=1, length=100, fill='█', printEnd="\r"):
     """
     https://stackoverflow.com/questions/3173320/text-progress-bar-in-the-console
     Call in a loop to create terminal progress bar

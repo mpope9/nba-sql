@@ -1,29 +1,18 @@
-import requests
 import urllib.parse
-
 from models import Player
-from constants import headers
+from general_requester import GenericRequester
 
 
-class PlayerRequester:
+class PlayerRequester(GenericRequester):
 
     per_mode = 'Totals'
     player_info_url = 'http://stats.nba.com/stats/leaguedashplayerbiostats'
-    rows = []
 
     def __init__(self, settings):
         """
-        Constructor. Attach settings internally and bind the model to the
-        database.
+        Constructor. Pass on all relevant vars.
         """
-        self.settings = settings
-        self.settings.db.bind([Player])
-
-    def create_ddl(self):
-        """
-        Initialize the table schema.
-        """
-        self.settings.db.create_tables([Player], safe=True)
+        super().__init__(settings, self.player_info_url, Player)
 
     def get_id_set(self):
         """
@@ -34,44 +23,20 @@ class PlayerRequester:
             s.add(player.player_id)
         return s
 
-    def add_player(self, season_id):
+    def generate_rows(self, season_id):
         """
         Build GET REST request to the NBA for a season.
-        Since we're in the context of a single player, we'll assemble
-        rows one at a time then do a bulk insert at the end.
         """
         params = self.build_params(season_id)
 
         # Encode without safe '+', apparently the NBA likes unsafe url params.
         params_str = urllib.parse.urlencode(params, safe=':+')
-
-        # json response
-        response = (
-            requests
-            .get(url=self.player_info_url, headers=headers, params=params_str)
-            .json()
-        )
-
-        # pulling just the data we want
-        player_info = response['resultSets'][0]['rowSet']
-
-        # looping over data to insert into table
-        # direct array is a PITA, how can we abstract this...
-        for row in player_info:
-            new_row = {
-                'player_id': row[0],
-                'player_name': row[1],
-                'college': row[8],
-                'country': row[9],
-                'draft_year': row[10],
-                'draft_round': row[11],
-                'draft_number': row[12]
-            }
-            self.rows.append(new_row)
+        super().generate_rows(season_id, params_str)
 
     def populate(self):
         """
-        Store collected rows.
+        Store collected rows. Custom implementation for the on_conflict_ignore
+        argument.
         """
         Player.insert_many(self.rows).on_conflict_ignore().execute()
 

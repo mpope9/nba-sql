@@ -29,6 +29,7 @@ class PlayByPlayRequester:
         # Encode without safe '+', apparently the NBA likes unsafe url params.
         params_str = urllib.parse.urlencode(params, safe=':+')
 
+        x = requests.get(url=self.url, headers=headers, params=params_str)
         response = (
             requests
             .get(url=self.url, headers=headers, params=params_str)

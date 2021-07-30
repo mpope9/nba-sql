@@ -4,6 +4,7 @@ import urllib.parse
 from models import PlayerGameLog
 from constants import headers
 from game import GameEntry
+from utils import season_id_to_int
 
 
 class PlayerGameLogRequester:
@@ -64,7 +65,7 @@ class PlayerGameLogRequester:
         # pulling just the data we want
         player_info = response['resultSets'][0]['rowSet']
 
-        season_int = int(season_id[:4])
+        season_int = season_id_to_int(season_id)
 
         # looping over data to insert into table
         for row in player_info:
