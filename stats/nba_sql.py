@@ -205,7 +205,7 @@ def main():
     if 'player_game_log' not in skip_tables:
         # Finally store player_game_log data after loading game data.
         print("Storing player_game_log table.")
-        player_game_log_requester.store_rows()
+        player_game_log_requester.populate()
         time.sleep(request_gap)
 
     season_bar = progress_bar(

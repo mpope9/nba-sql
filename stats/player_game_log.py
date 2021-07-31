@@ -1,13 +1,14 @@
 import requests
 import urllib.parse
 
+from utils import get_rowset_mapping, column_names_from_table, season_id_to_int
 from models import PlayerGameLog
-from constants import headers
 from game import GameEntry
-from utils import season_id_to_int
+from general_requester import GenericRequester
+from constants import headers
 
 
-class PlayerGameLogRequester:
+class PlayerGameLogRequester(GenericRequester):
     """
     This class builds player game data from a season.
     As an optimization, we also build a set of game data.
@@ -19,17 +20,12 @@ class PlayerGameLogRequester:
 
     url = 'https://stats.nba.com/stats/playergamelogs'
     game_set = set()
-    rows = []
 
     def __init__(self, settings):
-        self.settings = settings
-        self.settings.db.bind([PlayerGameLog])
-
-    def create_ddl(self):
         """
-        Initialize the table schema.
+        Constructor.
         """
-        self.settings.db.create_tables([PlayerGameLog], safe=True)
+        super().__init__(settings, self.url, PlayerGameLog)
 
     def get_game_set(self):
         """
@@ -62,13 +58,16 @@ class PlayerGameLogRequester:
 
         response = requests.get(url=self.url, headers=headers, params=params_str).json()
 
-        # pulling just the data we want
-        player_info = response['resultSets'][0]['rowSet']
+        result_sets = response['resultSets'][0]
+        rowset = result_sets['rowSet']
 
         season_int = season_id_to_int(season_id)
+        column_names = column_names_from_table(self.settings.db, self.table._meta.table_name)
+
+        column_mapping = get_rowset_mapping(result_sets, column_names)
 
         # looping over data to insert into table
-        for row in player_info:
+        for row in rowset:
             # Checking matchup for home team.
             if '@' in row[9]:
                 if row[10] == "W":
@@ -80,48 +79,10 @@ class PlayerGameLogRequester:
                 self.game_set.add(GameEntry(season_id=season_int, game_id=row[7], game_date=row[8], matchup_in=row[9],
                                             winner=winner, loser=loser))
 
-            new_row = {
-                'season_id': season_int,
-                'player_id': row[1],
-                'team_id': row[4],
-                'game_id': int(row[7]),
-                'wl': row[10],
-                'min': row[11],
-                'fgm': row[12],
-                'fga': row[13],
-                'fg_pct': row[14],
-                'fg3m': row[15],
-                'fg3a': row[16],
-                'fg3_pct': row[17],
-                'ftm': row[18],
-                'fta': row[19],
-                'ft_pct': row[20],
-                'oreb': row[21],
-                'dreb': row[22],
-                'reb': row[23],
-                'ast': row[24],
-                'tov': row[25],
-                'stl': row[26],
-                'blk': row[27],
-                'blka': row[28],
-                'pf': row[29],
-                'pfd': row[30],
-                'pts': row[31],
-                'plus_minus': row[32],
-                'nba_fantasy_pts': row[33],
-                'dd2': row[34],
-                'td3': row[35]
-            }
+            new_row = {column_name: row[row_index] for column_name, row_index in column_mapping.items()}
+            new_row['season_id'] = season_int
             self.rows.append(new_row)
-
-    def store_rows(self):
-        """
-        Stores the rows that have been fetched.
-        """
-        PlayerGameLog.insert_many(self.rows).execute()
-
-        # Is this how to 'free' memory?
-        self.rows = []
+        print(f'{len(self.rows)}')
 
     def build_params(self, season_id):
         """
