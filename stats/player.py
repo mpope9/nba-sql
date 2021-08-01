@@ -31,7 +31,7 @@ class PlayerRequester(GenericRequester):
 
         # Encode without safe '+', apparently the NBA likes unsafe url params.
         params_str = urllib.parse.urlencode(params, safe=':+')
-        super().generate_rows(season_id, params_str)
+        super().generate_rows(params_str)
 
     def populate(self):
         """

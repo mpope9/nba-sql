@@ -15,6 +15,8 @@ from .PlayerSeason import PlayerSeason
 from .PlayerGameLog import PlayerGameLog
 from .PlayerGeneralTraditionalTotal import PlayerGeneralTraditionalTotal
 from .PlayByPlay import PlayByPlay
+from .ShotChartDetail import ShotChartDetail
+from .ShotChartDetailTemp import ShotChartDetailTemp
 
 __all__ = [
     Player,
@@ -26,5 +28,7 @@ __all__ = [
     PlayerSeason,
     PlayerGameLog,
     PlayerGeneralTraditionalTotal,
-    PlayByPlay
+    PlayByPlay,
+    ShotChartDetail,
+    ShotChartDetailTemp
 ]

@@ -17,4 +17,4 @@ class TeamRequester(GenericRequester):
         Build GET Request for the team id.
         """
         params = {'TeamID': team_id}
-        super().generate_rows(team_id, params)
+        super().generate_rows(params)

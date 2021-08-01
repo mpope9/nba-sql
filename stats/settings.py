@@ -1,7 +1,4 @@
-from peewee import (
-    PostgresqlDatabase,
-    MySQLDatabase
-)
+from peewee import PostgresqlDatabase, MySQLDatabase, SqliteDatabase
 
 import os
 from dotenv import load_dotenv
@@ -35,6 +32,9 @@ class Settings:
                 user=DB_USER,
                 password=DB_PASSWORD
             )
+        elif database == "sqlite":
+            print("Initializing sqlite database.")
+            self.db = SqliteDatabase('nba_sql.db', pragmas={'journal_mode': 'wal'})
         else:
             print("Connecting to mysql database.")
             self.db = MySQLDatabase(

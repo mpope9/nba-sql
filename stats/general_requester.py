@@ -24,7 +24,7 @@ class GenericRequester:
         """
         self.settings.db.create_tables([self.table], safe=True)
 
-    def generate_rows(self, input_id, params):
+    def generate_rows(self, params):
         """
         Build GET REST request and fill the table.
         """
@@ -47,4 +47,5 @@ class GenericRequester:
         """
         Bulk insert.
         """
-        self.table.insert_many(self.rows).execute()
+        with self.settings.db.atomic():
+            self.table.insert_many(self.rows).execute()

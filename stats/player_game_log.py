@@ -45,6 +45,19 @@ class PlayerGameLogRequester(GenericRequester):
         """
         self.game_set = set_new
 
+    def get_team_player_id_set(self):
+        """
+        Returns a set of team id and player ids, used for the shot_chart_detail api.
+        """
+        s = set()
+        tid = PlayerGameLog.team_id
+        pid = PlayerGameLog.player_id
+
+        for player_game_log in PlayerGameLog.select(tid, pid).group_by(tid, pid):
+            s.add((player_game_log.team_id, player_game_log.player_id))
+
+        return s
+
     def fetch_season(self, season_id):
         """
         Build GET REST request to the NBA for a season,
@@ -82,7 +95,6 @@ class PlayerGameLogRequester(GenericRequester):
             new_row = {column_name: row[row_index] for column_name, row_index in column_mapping.items()}
             new_row['season_id'] = season_int
             self.rows.append(new_row)
-        print(f'{len(self.rows)}')
 
     def build_params(self, season_id):
         """
