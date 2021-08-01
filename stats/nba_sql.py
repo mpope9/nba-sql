@@ -40,7 +40,7 @@ def main():
     parser.add_argument(
         '--seasons',
         dest='seasons',
-        default=season_list[-1],
+        default=[season_list[-1]],
         choices=season_list,
         help="""
             The seasons flag loads the database with the specified season.
@@ -114,7 +114,8 @@ def main():
     create_schema = args.create_schema
     request_gap = float(args.request_gap)
     skip_base_tables = args.skip_base_tables
-    seasons = args.seasons
+    seasons = []
+    seasons.append(args.seasons)
     skip_tables = args.skip_tables
 
     settings = Settings(database)

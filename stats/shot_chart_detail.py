@@ -7,13 +7,13 @@ from peewee import JOIN
 
 class ShotChartDetailRequester(GenericRequester):
 
-    shot_char_detail_url = "https://stats.nba.com/stats/shotchartdetail"
+    shot_chart_detail_url = "https://stats.nba.com/stats/shotchartdetail"
 
     def __init__(self, settings):
         """
         Constructor. Pass on all relevant vars.
         """
-        super().__init__(settings, self.shot_char_detail_url, ShotChartDetail)
+        super().__init__(settings, self.shot_chart_detail_url, ShotChartDetail)
 
     def create_ddl(self):
         """
@@ -26,8 +26,8 @@ class ShotChartDetailRequester(GenericRequester):
     def finalize(self):
         """
         This function finishes loading shot_chart_detail by inserting all valid
-        records from the temp table into the main table, then dropping the temp
-        table.
+        records from the temp table into the main table. The temp table is
+        dropped at the end of the session.
         """
         print('Inserting from shot_char_detail temp table into main table.')
         with self.settings.db.atomic():
