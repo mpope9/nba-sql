@@ -24,6 +24,8 @@ class Settings:
             "Safari/537.36"
         )
 
+        self.db_type = database
+
         if database == "postgres":
             print("Connecting to postgres database.")
             self.db = PostgresqlDatabase(

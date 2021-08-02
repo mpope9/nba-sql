@@ -3,6 +3,7 @@ import urllib.parse
 from models import ShotChartDetail, ShotChartDetailTemp, Game
 from general_requester import GenericRequester
 from peewee import JOIN
+from db_utils import insert_many
 
 
 class ShotChartDetailRequester(GenericRequester):
@@ -99,8 +100,7 @@ class ShotChartDetailRequester(GenericRequester):
         Store collected rows. Custom implementation to clear out the rows beteen
         populations and insert into the staging table.
         """
-        with self.settings.db.atomic():
-            ShotChartDetailTemp.insert_many(self.rows).execute()
+        insert_many(self.settings, ShotChartDetailTemp, self.rows)
         self.rows = []
 
     def build_params(self, team_id, player_id):

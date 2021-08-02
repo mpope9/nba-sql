@@ -1,6 +1,8 @@
 import urllib.parse
+
 from models import Player
 from general_requester import GenericRequester
+from db_utils import insert_many_on_conflict_ignore
 
 
 class PlayerRequester(GenericRequester):
@@ -38,7 +40,7 @@ class PlayerRequester(GenericRequester):
         Store collected rows. Custom implementation for the on_conflict_ignore
         argument.
         """
-        Player.insert_many(self.rows).on_conflict_ignore().execute()
+        insert_many_on_conflict_ignore(self.settings, Player, self.rows)
 
     def build_params(self, season_id):
         """

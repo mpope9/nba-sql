@@ -1,6 +1,7 @@
 from models import Game
 from constants import team_abbrev_mapping
 from collections import namedtuple
+from db_utils import insert_many
 
 
 GameEntry = namedtuple("GameEntry", "season_id, game_id, game_date, matchup_in, winner, loser")
@@ -54,4 +55,4 @@ class GameBuilder:
 
             rows.append(new_row)
 
-        Game.insert_many(rows).execute()
+        insert_many(self.settings, Game, rows)

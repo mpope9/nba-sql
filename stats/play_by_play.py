@@ -3,6 +3,7 @@ import urllib.parse
 
 from models import PlayByPlay
 from constants import headers
+from db_utils import insert_many
 
 
 class PlayByPlayRequester:
@@ -78,7 +79,7 @@ class PlayByPlayRequester:
             for key in ['player1_id', 'player2_id', 'player3_id']:
                 if row[key] is not None and row[key] not in player_id_set:
                     row[key] is None
-        PlayByPlay.insert_many(rows).execute()
+        insert_many(self.settings, PlayByPlay, rows)
 
     def build_params(self, game_id):
         """

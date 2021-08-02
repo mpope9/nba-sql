@@ -2,6 +2,7 @@ import requests
 
 from utils import get_rowset_mapping, column_names_from_table
 from constants import headers
+from db_utils import insert_many
 
 
 class GenericRequester:
@@ -47,5 +48,4 @@ class GenericRequester:
         """
         Bulk insert.
         """
-        with self.settings.db.atomic():
-            self.table.insert_many(self.rows).execute()
+        insert_many(self.settings, self.table, self.rows)

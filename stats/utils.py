@@ -36,3 +36,9 @@ def column_names_from_table(db, table_name):
         mapped.remove('id')
 
     return mapped
+
+def chunk_list(in_list, n):
+    """
+    Chunk list into lists of length n.
+    """
+    return [in_list[i:i + n] for i in range(0, len(in_list), n)]
