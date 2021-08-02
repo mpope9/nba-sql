@@ -72,7 +72,7 @@ class ShotChartDetailRequester(GenericRequester):
                     ShotChartDetail.shot_zone_basic,
                     ShotChartDetail.shot_zone_area,
                     ShotChartDetail.shot_zone_range,
-                    ShotChartDetail.shot_distance, --seasons 2019-20
+                    ShotChartDetail.shot_distance,
                     ShotChartDetail.loc_x,
                     ShotChartDetail.loc_y,
                     ShotChartDetail.shot_attempted_flag,

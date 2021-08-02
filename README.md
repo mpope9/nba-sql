@@ -14,7 +14,7 @@ psql -U <USERNAME> <DBNAME> < nba.sql
 
 This DB is still under construction and liable to schema changes. v0.1.0 will be the final schema before an official migration system is added. Until then, expect to rebuild the whole DB when trying to upgrade.
 
-The default behavior is loading the current season into a MySQL database. There are flags provided use a Postgres or SQLite database, and to specify a specific season. See commandline reference below.
+The default behavior is loading the previous season into a MySQL database. There are flags provided use a Postgres or SQLite database, and to specify a specific season. See commandline reference below.
 
 Big shoutout to BurntSushi's [nfldb](https://github.com/BurntSushi/nfldb) as well as the [nba_api project](https://github.com/swar/nba_api). They are great inspirations and indispensable resources to this project.
 
@@ -23,7 +23,7 @@ Big shoutout to BurntSushi's [nfldb](https://github.com/BurntSushi/nfldb) as wel
 * [A good place for more information is the wiki](https://github.com/mpope9/nba-sql/wiki).
 * [Looking to contribute? Check the list of open issues!](https://github.com/mpope9/nba-sql/issues)
 
-It will take an estimated 3 hours to build the whole database. However, some tables take much longer than others due to the amount of data: `play_by_play`, `shot_chart_detail`, and `pgtt` in particular. These can be skilled with the `--skip-tables` option.
+It will take an estimated 6 hours to build the whole database. However, some tables take much longer than others due to the amount of data: `play_by_play`, `shot_chart_detail`, and `pgtt` in particular. These can be skilled with the `--skip-tables` option.
 
 The following environment variables must be set. There are no commandline arguments to specify these. The following example are connection details for the provided docker-compose database:
 ```

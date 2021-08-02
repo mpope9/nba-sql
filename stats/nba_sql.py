@@ -23,7 +23,7 @@ description = """
     nba_sql application.
 
     The command loads the database with historic data from the
-    1996-97 / 2020-21 seasons.
+    1996-97 / 2019-20 seasons.
 
     EX:
         python3 stats/nba_sql.py
@@ -37,10 +37,13 @@ def main():
 
     parser = argparse.ArgumentParser(description=description)
 
+    ## TODO: Current season doesn't work with the player endpoint.
+    last_loadable_season = season_list[-2]
+
     parser.add_argument(
         '--seasons',
         dest='seasons',
-        default=[season_list[-1]],
+        default=last_loadable_season,
         choices=season_list,
         help="""
             The seasons flag loads the database with the specified season.
@@ -267,7 +270,6 @@ def populate_base_tables(seasons, request_gap, team_requester, player_requester,
     """
     print('Populating base tables')
 
-    print(f'{seasons}')
     team_bar = progress_bar(team_ids, prefix='team Table Loading', suffix='', length=30)
     player_bar = progress_bar(seasons, prefix='player Table Loading', suffix='', length=30)
 
