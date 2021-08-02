@@ -267,6 +267,7 @@ def populate_base_tables(seasons, request_gap, team_requester, player_requester,
     """
     print('Populating base tables')
 
+    print(f'{seasons}')
     team_bar = progress_bar(team_ids, prefix='team Table Loading', suffix='', length=30)
     player_bar = progress_bar(seasons, prefix='player Table Loading', suffix='', length=30)
 

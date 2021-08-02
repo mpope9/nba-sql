@@ -57,8 +57,6 @@ class ShotChartDetailRequester(GenericRequester):
                     .where(ShotChartDetailTemp.game_id.in_(
                         Game.select(Game.game_id)
                     )),
-                    #.join(Game, JOIN.LEFT_OUTER, 
-                    #    on=(Game.game_id == ShotChartDetailTemp.game_id)),
                 # TODO: Cleaner way to specify all fields but one?
                 fields=[
                     ShotChartDetail.game_id,
@@ -74,7 +72,7 @@ class ShotChartDetailRequester(GenericRequester):
                     ShotChartDetail.shot_zone_basic,
                     ShotChartDetail.shot_zone_area,
                     ShotChartDetail.shot_zone_range,
-                    ShotChartDetail.shot_distance,
+                    ShotChartDetail.shot_distance, --seasons 2019-20
                     ShotChartDetail.loc_x,
                     ShotChartDetail.loc_y,
                     ShotChartDetail.shot_attempted_flag,
