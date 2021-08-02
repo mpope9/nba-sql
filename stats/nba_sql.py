@@ -37,8 +37,7 @@ def main():
 
     parser = argparse.ArgumentParser(description=description)
 
-    ## TODO: Current season doesn't work with the player endpoint.
-    last_loadable_season = season_list[-2]
+    last_loadable_season = season_list[-1]
 
     parser.add_argument(
         '--seasons',

@@ -6,7 +6,7 @@ An application to build a Postgres or MySQL NBA database from the public API.
 
 To access the latest Postgres dump file [check the releases tab](https://github.com/mpope9/nba-sql/releases).
 
-To use a PG dump from the releases, decompress using `xc`, then load with `psql`, like this:
+To use a PG dump from the releases, decompress using `xz`, then load with `psql`, like this:
 ```bash
 xz -d nba.sql.xz
 psql -U <USERNAME> <DBNAME> < nba.sql
@@ -14,7 +14,7 @@ psql -U <USERNAME> <DBNAME> < nba.sql
 
 This DB is still under construction and liable to schema changes. v0.1.0 will be the final schema before an official migration system is added. Until then, expect to rebuild the whole DB when trying to upgrade.
 
-The default behavior is loading the previous season into a MySQL database. There are flags provided use a Postgres or SQLite database, and to specify a specific season. See commandline reference below.
+The default behavior is loading the current season into a MySQL database. There are flags provided use a Postgres or SQLite database, and to specify a specific season. See commandline reference below.
 
 # Getting Started
 
