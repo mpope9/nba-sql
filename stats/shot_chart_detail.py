@@ -111,7 +111,7 @@ class ShotChartDetailRequester(GenericRequester):
                 'AheadBehind': '', 
                 'ClutchTime': '',
                 'ContextFilter': '',
-                'ContextMeasure': 'PTS',
+                'ContextMeasure': 'FGA',
                 'DateFrom': '',
                 'DateTo': '',
                 'EndPeriod': '',
