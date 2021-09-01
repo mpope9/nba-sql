@@ -18,8 +18,31 @@ import concurrent.futures
 import argparse
 import time
 import copy
+import sys
 
 from gooey import Gooey
+
+# This fixes an issue with Gooey and PyInstaller.
+import codecs
+if sys.stdout.encoding != 'UTF-8':
+    sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer, 'strict')
+if sys.stderr.encoding != 'UTF-8':
+    sys.stderr = codecs.getwriter('utf-8')(sys.stderr.buffer, 'strict')
+
+# This 'fixes' an issue with printing in the Gooey console, kinda sorta not really.
+class Unbuffered(object):
+   def __init__(self, stream):
+       self.stream = stream
+   def write(self, data):
+       self.stream.write(data)
+       self.stream.flush()
+   def writelines(self, datas):
+       self.stream.writelines(datas)
+       self.stream.flush()
+   def __getattr__(self, attr):
+       return getattr(self.stream, attr)
+
+sys.stdout = Unbuffered(sys.stdout)
 
 description = """
     nba_sql application.
@@ -322,7 +345,7 @@ def progress_bar(iterable, prefix='', suffix='', decimals=1, length=100, fill='â
         )
         filledLength = int(length * iteration // total)
         bar = fill * filledLength + '-' * (length - filledLength)
-        print(f'\r{prefix} |{bar}| {percent}% {suffix}', end=printEnd)
+        print(f'\r{prefix} |{bar}| {percent}% {suffix}', end=printEnd, flush=True)
     # Initial Call
     printProgressBar(0)
     # Update Progress Bar
