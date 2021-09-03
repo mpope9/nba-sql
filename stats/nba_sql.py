@@ -101,6 +101,8 @@ def main():
         dest='seasons',
         default=last_loadable_season,
         choices=season_list,
+        widget='Listbox',
+        nargs="*",
         help="""
             The seasons flag loads the database with the specified season.
             The format of the season should be in the form "YYYY-YY".
@@ -161,6 +163,7 @@ def main():
         nargs="*",
         default='',
         choices=['player_season', 'player_game_log', 'play_by_play', 'pgtt', 'shot_chart_detail', ''],
+        widget='Listbox',
         help=(
             "Use this option to skip loading certain tables. "
             " Example: --skip-tables play_by_play pgtt"
