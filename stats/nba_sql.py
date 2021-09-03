@@ -15,15 +15,25 @@ from constants import season_list, team_ids
 from settings import Settings
 
 import concurrent.futures
-import argparse
 import time
 import copy
 import sys
+import codecs
 
-from gooey import Gooey
+from gooey import Gooey, GooeyParser
+
+
+description = """
+    nba_sql application.
+
+    The command loads the database with historic data from the
+    1996-97 / 2019-20 seasons.
+
+    EX:
+        python3 stats/nba_sql.py
+    """
 
 # This fixes an issue with Gooey and PyInstaller.
-import codecs
 if sys.stdout.encoding != 'UTF-8':
     sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer, 'strict')
 if sys.stderr.encoding != 'UTF-8':
@@ -44,15 +54,12 @@ class Unbuffered(object):
 
 sys.stdout = Unbuffered(sys.stdout)
 
-description = """
-    nba_sql application.
 
-    The command loads the database with historic data from the
-    1996-97 / 2019-20 seasons.
-
-    EX:
-        python3 stats/nba_sql.py
-    """
+## Bad practice? Yes. Any other alternative? Not at this point.
+## Only enable Gooey if there are no arguments passed to the script.
+if len(sys.argv)>=2:
+    if not '--ignore-gooey' in sys.argv:
+        sys.argv.append('--ignore-gooey')
 
 
 @Gooey(
@@ -64,7 +71,28 @@ def main():
     Main driver for the nba_sql application.
     """
 
-    parser = argparse.ArgumentParser(description=description)
+    parser = GooeyParser(description="nba-sql")
+
+    parser.add_argument(
+        '--database_name', 
+        help="Database Name (Not Needed For SQLite)",
+        default=None)
+
+    parser.add_argument(
+        '--database_host', 
+        help="Database Hostname (Not Needed For SQLite)",
+        default=None)
+
+    parser.add_argument(
+        '--username',
+        help="Database Username (Not Needed For SQLite)",
+        default=None)
+
+    parser.add_argument(
+        '--password',
+        help="Database Password (Not Needed For SQLite)",
+        widget='PasswordField',
+        default=None)
 
     last_loadable_season = season_list[-1]
 
@@ -106,7 +134,7 @@ def main():
 
     parser.add_argument(
         '--database',
-        dest='database',
+        dest='database_type',
         default='sqlite',
         choices=['mysql', 'postgres', 'sqlite'],
         help="""
@@ -141,7 +169,6 @@ def main():
     args = parser.parse_args()
 
     # CMD line args.
-    database = args.database
     create_schema = args.create_schema
     request_gap = float(args.request_gap)
     skip_base_tables = args.skip_base_tables
@@ -149,7 +176,12 @@ def main():
     seasons.append(args.seasons)
     skip_tables = args.skip_tables
 
-    settings = Settings(database)
+    settings = Settings(
+        args.database_type, 
+        args.database_name, 
+        args.username, 
+        args.password,
+        args.database_host)
 
     player_requester = PlayerRequester(settings)
     team_requester = TeamRequester(settings)

@@ -45,30 +45,33 @@ It will take an estimated 6 hours to build the whole database. However, some tab
 ## Commandline Reference
 ```
 python stats/nba_sql.py -h
-usage: nba_sql.py [-h]
+usage: nba_sql.py [-h] [--database_name DATABASE_NAME] [--database_host DATABASE_HOST] [--username USERNAME] [--password PASSWORD]
                   [--seasons {1996-97,1997-98,1998-99,1999-00,2000-01,2001-02,2002-03,2003-04,2004-05,2005-06,2006-07,2007-08,2008-09,2009-10,2010-11,2011-12,2012-13,2013-14,2014-15,2015-16,2016-17,2017-18,2018-19,2019-20,2020-21}]
-                  [--skip-base-tables] [--create-schema] [--database {mysql,postgres,sqlite}]
-                  [--time-between-requests REQUEST_GAP]
-                  [--skip-tables [{player_season,player_game_log,play_by_play,pgtt,shot_chart_detail} [{player_season,player_game_log,play_by_play,pgtt,shot_chart_detail} ...]]]
+                  [--skip-base-tables] [--create-schema] [--database {mysql,postgres,sqlite}] [--time-between-requests REQUEST_GAP]
+                  [--skip-tables [{player_season,player_game_log,play_by_play,pgtt,shot_chart_detail,} [{player_season,player_game_log,play_by_play,pgtt,shot_chart_detail,} ...]]]
 
-nba_sql application. The command loads the database with historic data from the 1996-97 / 2020-21 seasons. EX: python3
-stats/nba_sql.py
+nba-sql
 
 optional arguments:
   -h, --help            show this help message and exit
+  --database_name DATABASE_NAME
+                        Database Name (Not Needed For SQLite)
+  --database_host DATABASE_HOST
+                        Database Hostname (Not Needed For SQLite)
+  --username USERNAME   Database Username (Not Needed For SQLite)
+  --password PASSWORD   Database Password (Not Needed For SQLite)
   --seasons {1996-97,1997-98,1998-99,1999-00,2000-01,2001-02,2002-03,2003-04,2004-05,2005-06,2006-07,2007-08,2008-09,2009-10,2010-11,2011-12,2012-13,2013-14,2014-15,2015-16,2016-17,2017-18,2018-19,2019-20,2020-21}
-                        The seasons flag loads the database with the specified season. The format of the season should be in
-                        the form "YYYY-YY". The default behavior is loading the current season. Example usage: --seasons
-                        2019-2020 2020-2021
-  --skip-base-tables    Flag to skip loading the 'base' tables, which are player and team. Useful if one already has an
-                        initialized database and only wants to fill/update a season.
+                        The seasons flag loads the database with the specified season. The format of the season should be in the form "YYYY-YY". The
+                        default behavior is loading the current season. Example usage: --seasons 2019-2020 2020-2021
+  --skip-base-tables    Flag to skip loading the 'base' tables, which are player and team. Useful if one already has an initialized database and only wants
+                        to fill/update a season.
   --create-schema       Flag to initialize the database schema before loading data.
   --database {mysql,postgres,sqlite}
-                        The database flag specifies which database protocol to use. Defaults to "mysql", but also accepts
-                        "postgres" and "sqlite". Example usage: --database postgres
+                        The database flag specifies which database protocol to use. Defaults to "mysql", but also accepts "postgres" and "sqlite". Example
+                        usage: --database postgres
   --time-between-requests REQUEST_GAP
                         This flag exists to prevent rate limiting, and we inject a sleep inbetween requesting resources.
-  --skip-tables [{player_season,player_game_log,play_by_play,pgtt,shot_chart_detail} [{player_season,player_game_log,play_by_play,pgtt,shot_chart_detail} ...]]
+  --skip-tables [{player_season,player_game_log,play_by_play,pgtt,shot_chart_detail,} [{player_season,player_game_log,play_by_play,pgtt,shot_chart_detail,} ...]]
                         Use this option to skip loading certain tables. Example: --skip-tables play_by_play pgtt
 ```
 
