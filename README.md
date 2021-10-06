@@ -6,14 +6,6 @@ An application to build a Postgres, MySQL, or SQLite NBA database from the publi
 
 If you are looking for the Windows client: [the latest alpha can be found here](https://github.com/mpope9/nba-sql/releases/tag/v0.0.4).
 
-To access the latest Postgres dump file [check the releases tab](https://github.com/mpope9/nba-sql/releases).
-
-To use a PG dump from the releases, decompress using `xz`, then load with `psql`, like this:
-```bash
-xz -d nba.sql.xz
-psql -U <USERNAME> <DBNAME> < nba.sql
-```
-
 This DB is still under construction and liable to schema changes. v0.1.0 will be the final schema before an official migration system is added. Until then, expect to rebuild the whole DB when trying to upgrade.
 
 The default behavior is loading the current season into a SQLite database. There are flags provided use a Postgres or SQLite database, and to specify a specific season. See commandline reference below.
@@ -47,8 +39,8 @@ It will take an estimated 6 hours to build the whole database. However, some tab
 python stats/nba_sql.py -h
 usage: nba_sql.py [-h] [--database_name DATABASE_NAME] [--database_host DATABASE_HOST] [--username USERNAME] [--password PASSWORD]
                   [--seasons {1996-97,1997-98,1998-99,1999-00,2000-01,2001-02,2002-03,2003-04,2004-05,2005-06,2006-07,2007-08,2008-09,2009-10,2010-11,2011-12,2012-13,2013-14,2014-15,2015-16,2016-17,2017-18,2018-19,2019-20,2020-21}]
-                  [--skip-base-tables] [--create-schema] [--database {mysql,postgres,sqlite}] [--time-between-requests REQUEST_GAP]
-                  [--skip-tables [{player_season,player_game_log,play_by_play,pgtt,shot_chart_detail,} [{player_season,player_game_log,play_by_play,pgtt,shot_chart_detail,} ...]]]
+                  [--create-schema] [--database {mysql,postgres,sqlite}] [--time-between-requests REQUEST_GAP]
+                  [--skip-tables [{player_season,player_game_log,play_by_play,pgtt,shot_chart_detail,game,team,event_message_type,} [{player_season,player_game_log,play_by_play,pgtt,shot_chart_detail,} ...]]]
 
 nba-sql
 
@@ -63,8 +55,6 @@ optional arguments:
   --seasons {1996-97,1997-98,1998-99,1999-00,2000-01,2001-02,2002-03,2003-04,2004-05,2005-06,2006-07,2007-08,2008-09,2009-10,2010-11,2011-12,2012-13,2013-14,2014-15,2015-16,2016-17,2017-18,2018-19,2019-20,2020-21}
                         The seasons flag loads the database with the specified season. The format of the season should be in the form "YYYY-YY". The
                         default behavior is loading the current season. Example usage: --seasons 2019-2020 2020-2021
-  --skip-base-tables    Flag to skip loading the 'base' tables, which are player and team. Useful if one already has an initialized database and only wants
-                        to fill/update a season.
   --create-schema       Flag to initialize the database schema before loading data.
   --database {mysql,postgres,sqlite}
                         The database flag specifies which database protocol to use. Defaults to "mysql", but also accepts "postgres" and "sqlite". Example
