@@ -79,18 +79,33 @@ class PlayerGameLogRequester(GenericRequester):
 
         column_mapping = get_rowset_mapping(result_sets, column_names)
 
+        rowset_mapping = get_rowset_mapping(result_sets, self.local_resultset_rows())
+
         # looping over data to insert into table
         for row in rowset:
+
+            matchup = row[rowset_mapping['MATCHUP']]
+            wl = row[rowset_mapping['WL']]
+            team_id = row[rowset_mapping['TEAM_ID']]
+            game_date = row[rowset_mapping['GAME_DATE']]
+            game_id = row[rowset_mapping['GAME_ID']]
+
             # Checking matchup for home team.
-            if '@' in row[9]:
-                if row[10] == "W":
-                    winner = row[4]
+            if '@' in matchup:
+                if wl == "W":
+                    winner = team_id
                     loser = ""
                 else:
                     winner = ""
-                    loser = row[4]
-                self.game_set.add(GameEntry(season_id=season_int, game_id=row[7], game_date=row[8], matchup_in=row[9],
-                                            winner=winner, loser=loser))
+                    loser = team_id
+                self.game_set.add(
+                    GameEntry(
+                        season_id=season_int, 
+                        game_id=game_id,
+                        game_date=game_date,
+                        matchup_in=matchup,
+                        winner=winner, 
+                        loser=loser))
 
             new_row = {column_name: row[row_index] for column_name, row_index in column_mapping.items()}
             new_row['season_id'] = season_int
@@ -123,3 +138,16 @@ class PlayerGameLogRequester(GenericRequester):
             'VsConference': '',
             'VsDivision': ''
         }
+
+    def local_resultset_rows(self):
+        """
+        Returns list of the specific rows that we want to pull from the request.
+        """
+
+        return [
+            'MATCHUP',
+            'WL',
+            'TEAM_ID',
+            'GAME_ID',
+            'GAME_DATE'
+        ]

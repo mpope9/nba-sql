@@ -113,18 +113,6 @@ def main():
     )
 
     parser.add_argument(
-        '--skip-base-tables',
-        action="store_true",
-        default=False,
-        help="""
-            Flag to skip loading the 'base' tables, which are player and team.
-            Useful if one already has an initialized database and only
-            wants to fill/update
-            a season.
-            """
-    )
-
-    parser.add_argument(
         '--create-schema',
         dest='create_schema',
         action="store_true",
@@ -162,7 +150,7 @@ def main():
         action='store',
         nargs="*",
         default='',
-        choices=['player_season', 'player_game_log', 'play_by_play', 'pgtt', 'shot_chart_detail', ''],
+        choices=['player_season', 'player_game_log', 'play_by_play', 'pgtt', 'shot_chart_detail', 'game', 'event_message_type', 'team', ''],
         widget='Listbox',
         help=(
             "Use this option to skip loading certain tables. "
@@ -174,11 +162,10 @@ def main():
     # CMD line args.
     create_schema = args.create_schema
     request_gap = float(args.request_gap)
-    skip_base_tables = args.skip_base_tables
     seasons = args.seasons
-    print(f"{seasons}")
     skip_tables = args.skip_tables
 
+    print(f"Loading seasons: {seasons}.")
     settings = Settings(
         args.database_type, 
         args.database_name, 
@@ -215,13 +202,28 @@ def main():
     if create_schema:
         do_create_schema(object_list)
 
-    if not skip_base_tables:
-        populate_base_tables(
-            seasons,
-            request_gap,
-            team_requester,
-            player_requester,
-            event_message_type_builder)
+    if 'team' not in skip_tables:
+        print('Populating team table.')
+
+        team_bar = progress_bar(team_ids, prefix='team Table Loading', suffix='', length=30)
+        for team_id in team_bar:
+            team_requester.generate_rows(team_id)
+            time.sleep(request_gap)
+
+        team_requester.populate()
+
+    if 'event_message_type' not in skip_tables:
+        print('Loading event types.')
+        event_message_type_builder.initialize()
+
+    if 'player' not in skip_tables:
+        print('Populating player data')
+
+        player_bar = progress_bar(seasons, prefix='player Table Loading', suffix='', length=30)
+        for season_id in player_bar:
+            player_requester.generate_rows(season_id)
+            time.sleep(request_gap)
+        player_requester.populate()
 
     player_game_seasons_bar = progress_bar(
         seasons,
@@ -235,10 +237,7 @@ def main():
         player_game_log_requester.fetch_season(season_id)
         time.sleep(request_gap)
 
-    # First, load game specific data.
     game_set = player_game_log_requester.get_game_set()
-    print('Loading cached game table.')
-    game_builder.populate_table(game_set)
 
     # Fetch ids from tuples.
     game_list = [game[1] for game in game_set]
@@ -247,6 +246,11 @@ def main():
         game_list,
         prefix='Loading PlayByPlay Data',
         length=30)
+
+    # First, load game specific data.
+    if 'game' not in skip_tables:
+        print('Loading cached game table.')
+        game_builder.populate_table(game_set)
 
     if 'play_by_play' not in skip_tables:
         # Load game dependent data.
@@ -327,33 +331,6 @@ def do_create_schema(object_list):
         obj.create_ddl()
 
 
-def populate_base_tables(seasons, request_gap, team_requester, player_requester, event_message_type_builder):
-    """
-    Populates base tables.
-    """
-    print('Populating base tables')
-
-    team_bar = progress_bar(team_ids, prefix='team Table Loading', suffix='', length=30)
-    player_bar = progress_bar(seasons, prefix='player Table Loading', suffix='', length=30)
-
-    # Load team data.
-    print('Populating team data')
-    for team_id in team_bar:
-        team_requester.generate_rows(team_id)
-        time.sleep(request_gap)
-    team_requester.populate()
-
-    # Load player data.
-    print('Populating player data')
-    for season_id in player_bar:
-        player_requester.generate_rows(season_id)
-        time.sleep(request_gap)
-    player_requester.populate()
-
-    print('Loading event types.')
-    event_message_type_builder.initialize()
-
-
 def progress_bar(iterable, prefix='', suffix='', decimals=1, length=100, fill='â–ˆ', printEnd="\r"):
     """
     https://stackoverflow.com/questions/3173320/text-progress-bar-in-the-console
@@ -380,7 +357,7 @@ def progress_bar(iterable, prefix='', suffix='', decimals=1, length=100, fill='â
         )
         filledLength = int(length * iteration // total)
         bar = fill * filledLength + '-' * (length - filledLength)
-        print(f'\r{prefix} |{bar}| {percent}% {suffix}', end=printEnd, flush=True)
+        print(f'\r{prefix} |{bar}| {percent}% {suffix}', end=printEnd)
     # Initial Call
     printProgressBar(0)
     # Update Progress Bar
