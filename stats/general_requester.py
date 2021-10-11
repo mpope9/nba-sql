@@ -48,4 +48,6 @@ class GenericRequester:
         """
         Bulk insert.
         """
-        insert_many(self.settings, self.table, self.rows)
+        offset = 5000
+        for index in range(0, len(self.rows), offset):
+            insert_many(self.settings, self.table, self.rows[index:index+offset])
