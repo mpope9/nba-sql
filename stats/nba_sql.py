@@ -129,7 +129,7 @@ def main():
         choices=['mysql', 'postgres', 'sqlite'],
         help="""
             The database flag specifies which database protocol to use.
-            Defaults to "mysql", but also accepts "postgres" and "sqlite".
+            Defaults to "sqlite", but also accepts "postgres" and "mysql".
             Example usage:
             --database postgres
             """
