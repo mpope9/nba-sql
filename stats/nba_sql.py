@@ -145,6 +145,17 @@ def main():
             """
     )
 
+    #To fix issue https://github.com/mpope9/nba-sql/issues/56
+    parser.add_argument(
+        '--batch_size',
+        default='10000',
+        type=int,
+        help="""
+            Inserts BATCH_SIZE chunks of rows to the database.
+            This value is ignored when selecting database 'sqlite'.
+            """
+    )
+
     parser.add_argument(
         '--skip-tables',
         action='store',
@@ -171,7 +182,8 @@ def main():
         args.database_name, 
         args.username, 
         args.password,
-        args.database_host)
+        args.database_host,
+        args.batch_size)
 
     player_requester = PlayerRequester(settings)
     team_requester = TeamRequester(settings)
