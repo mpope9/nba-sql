@@ -11,11 +11,13 @@ def insert_many(settings, table, rows):
     Entry function on insert_many.
     """
 
+    chunked_rows = chunk_list(rows, settings.batch_size)
     if settings.db_type == 'sqlite':
         __insert_many_sqlite(settings, table, rows)
     else:
         with settings.db.atomic():
-            table.insert_many(rows).execute()
+            for row in chunked_rows:
+                table.insert_many(row).execute()
 
 def __insert_many_sqlite(settings, table, rows):
     """

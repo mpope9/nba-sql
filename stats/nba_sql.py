@@ -85,7 +85,8 @@ def main():
         args.database_name, 
         args.username, 
         args.password,
-        args.database_host)
+        args.database_host,
+        args.batch_size)
 
     player_requester = PlayerRequester(settings)
     team_requester = TeamRequester(settings)
