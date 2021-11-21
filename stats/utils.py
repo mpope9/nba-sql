@@ -42,3 +42,42 @@ def chunk_list(in_list, n):
     Chunk list into lists of length n.
     """
     return [in_list[i:i + n] for i in range(0, len(in_list), n)]
+
+
+def progress_bar(iterable, prefix='', suffix='', decimals=1, length=100, fill='█', printEnd="\r"):
+    """
+    https://stackoverflow.com/questions/3173320/text-progress-bar-in-the-console
+    Call in a loop to create terminal progress bar
+    @params:
+    iteration   - Required  : current iteration (Int)
+    total       - Required  : total iterations (Int)
+    prefix      - Optional  : prefix string (Str)
+    suffix      - Optional  : suffix string (Str)
+    decimals    - Optional  : number of decimals in percent complete (Int)
+    length      - Optional  : character length of bar (Int)
+    fill        - Optional  : bar fill character (Str)
+    printEnd    - Optional  : end character (e.g. "\r", "\r\n") (Str)
+    """
+    total = 1
+    if iterable:
+        total = len(iterable)
+
+    # Progress Bar Printing Function
+    def printProgressBar(iteration):
+        percent = (
+            ("{0:." + str(decimals) + "f}")
+            .format(100 * (iteration / float(total)))
+        )
+        filledLength = int(length * iteration // total)
+        bar = fill * filledLength + '-' * (length - filledLength)
+        print(f'\r{prefix} |{bar}| {percent}% {suffix}', end=printEnd)
+    # Initial Call
+    printProgressBar(0)
+    # Update Progress Bar
+    for i, item in enumerate(iterable):
+        yield item
+        printProgressBar(i + 1)
+    # Print New Line on Complete
+    print()
+
+
