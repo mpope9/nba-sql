@@ -1,8 +1,9 @@
 import requests
 import urllib.parse
 
+from db_utils import insert_many
 from utils import get_rowset_mapping, column_names_from_table, season_id_to_int
-from models import PlayerGameLog
+from models import PlayerGameLog, PlayerGameLogTemp
 from game import GameEntry
 from general_requester import GenericRequester
 from constants import headers
@@ -26,6 +27,24 @@ class PlayerGameLogRequester(GenericRequester):
         Constructor.
         """
         super().__init__(settings, self.url, PlayerGameLog)
+        # TODO: this conflicts with a fresh db.
+        self.settings.db.bind([PlayerGameLogTemp])
+        self.settings.db.create_tables([PlayerGameLogTemp], safe=True)
+
+    def create_ddl(self):
+        """
+        Override method to setup temp table.
+        """
+        super().create_ddl()
+        self.settings.db.bind([PlayerGameLogTemp])
+        self.settings.db.create_tables([PlayerGameLogTemp], safe=True)
+ 
+    def populate_temp(self):
+        """
+        Bulk insert.
+        """
+        insert_many(self.settings, PlayerGameLogTemp, self.rows)
+        ## TODO: should set rows to []?
 
     def get_game_set(self):
         """
@@ -45,18 +64,36 @@ class PlayerGameLogRequester(GenericRequester):
         """
         self.game_set = set_new
 
-    def get_team_player_id_set(self):
+    def get_team_player_id_set(self, temp_table=False):
         """
         Returns a set of team id and player ids, used for the shot_chart_detail api.
         """
         s = set()
-        tid = PlayerGameLog.team_id
-        pid = PlayerGameLog.player_id
 
-        for player_game_log in PlayerGameLog.select(tid, pid).group_by(tid, pid):
+        if temp_table:
+            table = PlayerGameLogTemp
+        else:
+            table = PlayerGameLog
+
+        tid = table.team_id
+        pid = table.player_id
+
+        for player_game_log in table.select(tid, pid).group_by(tid, pid):
             s.add((player_game_log.team_id, player_game_log.player_id))
 
         return s
+
+    def temp_table_except_predicate(self):
+        """
+        This runs an EXCEPT between the temp table and the non-temp table to find
+        the new games.
+        """
+        regular_query = PlayerGameLog.select(PlayerGameLog.game_id)
+        temp_query = PlayerGameLogTemp.select(PlayerGameLogTemp.game_id)
+
+        expt = temp_query - regular_query
+
+        return expt.select_from(expt.c.game_id)
 
     def fetch_season(self, season_id):
         """

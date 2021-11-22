@@ -19,6 +19,12 @@ class GameBuilder:
         """
         self.settings.db.create_tables([Game], safe=True)
 
+    def game_id_predicate(self):
+        """
+        Returns a selection of the game id.
+        """
+        return Game.select(Game.game_id)
+
     def populate_table(self, game_set):
         """
         Takes a set of tuples and builds the game table.

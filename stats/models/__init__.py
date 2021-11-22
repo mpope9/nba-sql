@@ -13,6 +13,7 @@ from .TeamGameLog import TeamGameLog
 # Player Tables
 from .PlayerSeason import PlayerSeason
 from .PlayerGameLog import PlayerGameLog
+from .PlayerGameLogTemp import PlayerGameLogTemp
 from .PlayerGeneralTraditionalTotal import PlayerGeneralTraditionalTotal
 from .PlayByPlay import PlayByPlay
 from .ShotChartDetail import ShotChartDetail

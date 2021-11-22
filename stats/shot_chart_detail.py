@@ -15,6 +15,9 @@ class ShotChartDetailRequester(GenericRequester):
         Constructor. Pass on all relevant vars.
         """
         super().__init__(settings, self.shot_chart_detail_url, ShotChartDetail)
+        # TODO: this conflicts with a fresh db.
+        self.settings.db.bind([ShotChartDetailTemp])
+        self.settings.db.create_tables([ShotChartDetailTemp], safe=True)
 
     def create_ddl(self):
         """
@@ -24,13 +27,17 @@ class ShotChartDetailRequester(GenericRequester):
         self.settings.db.bind([ShotChartDetailTemp])
         self.settings.db.create_tables([ShotChartDetailTemp], safe=True)
 
-    def finalize(self):
+    def finalize(self, filter_predicate):
         """
         This function finishes loading shot_chart_detail by inserting all valid
         records from the temp table into the main table. The temp table is
         dropped at the end of the session.
+
+        This accepts a predicate to define what game_ids to filter on.
+        Examples of usage: to only add rows for existing games, or for the
+        EXCEPT for the player_game_log regular and temp tables.
         """
-        print('Inserting from shot_char_detail temp table into main table.')
+        print('Inserting from shot_chart_detail temp table into main table.')
         with self.settings.db.atomic():
             (ShotChartDetail.insert_from(
                 ShotChartDetailTemp.select(
@@ -55,9 +62,7 @@ class ShotChartDetailRequester(GenericRequester):
                             ShotChartDetailTemp.htm,
                             ShotChartDetailTemp.vtm
                     )
-                    .where(ShotChartDetailTemp.game_id.in_(
-                        Game.select(Game.game_id)
-                    )),
+                    .where(ShotChartDetailTemp.game_id.in_(filter_predicate)),
                 # TODO: Cleaner way to specify all fields but one?
                 fields=[
                     ShotChartDetail.game_id,
@@ -107,6 +112,15 @@ class ShotChartDetailRequester(GenericRequester):
         """
         Create required parameters dict for the request.
         """
+        params = self.base_params()
+        params['PlayerID'] = player_id
+        params['TeamID'] = team_id
+        return params
+
+    def base_params(self):
+        """
+        The base params map.
+        """
         return {
                 'AheadBehind': '', 
                 'ClutchTime': '',
@@ -125,7 +139,7 @@ class ShotChartDetailRequester(GenericRequester):
                 'OpponentTeamID': '0',
                 'Outcome': '',
                 'Period': '0',
-                'PlayerID': player_id,
+                'PlayerID': '',
                 'PlayerPosition': '',
                 'PointDiff': '',
                 'Position': '',
@@ -136,7 +150,8 @@ class ShotChartDetailRequester(GenericRequester):
                 'SeasonType': 'Regular+Season',
                 'StartPeriod': '',
                 'StartRange': '',
-                'TeamID': team_id,
+                'TeamID': '',
                 'VsConference': '',
                 'VsDivision': ''
         }
+

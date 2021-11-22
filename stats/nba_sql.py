@@ -11,7 +11,7 @@ from player_general_traditional_total import (
 from play_by_play import PlayByPlayRequester
 from shot_chart_detail import ShotChartDetailRequester
 
-from constants import team_ids
+from constants import season_list, team_ids
 from settings import Settings
 from utils import progress_bar
 
@@ -206,7 +206,7 @@ def default_mode(settings, create_schema, request_gap, seasons, skip_tables):
             shot_chart_requester.populate()
             time.sleep(request_gap)
 
-        shot_chart_requester.finalize()
+        shot_chart_requester.finalize(game_builder.game_id_predicate())
 
     season_bar = progress_bar(
         seasons,
@@ -237,12 +237,44 @@ def do_create_schema(object_list):
         obj.create_ddl()
 
 
-def current_season_mode(settings):
+def current_season_mode(settings, request_gap):
     """
     Refreshes the current season in a previously existing database.
     """
 
     print("Refreshing the current season in the existing database.")
+
+    season = season_list[-1]
+
+    player_game_log_requester = PlayerGameLogRequester(settings)
+    game_builder = GameBuilder(settings)
+    shot_chart_requester = ShotChartDetailRequester(settings)
+
+    print("Fetching current season data.")
+    player_game_log_requester.fetch_season(season)
+    player_game_log_requester.populate_temp()
+    time.sleep(request_gap)
+
+    # TODO: Re-add
+    #game_set = player_game_log_requester.get_game_set()
+    #game_builder.populate_table(game_set)
+
+    team_player_set = player_game_log_requester.get_team_player_id_set(True)
+
+    shot_chart_bar = progress_bar(
+        team_player_set,
+        prefix='Loading Shot Chart Data',
+        suffix='',
+        length=30)
+
+    for id_tuple in shot_chart_bar:
+
+        shot_chart_requester.generate_rows(id_tuple[0], id_tuple[1])
+        shot_chart_requester.populate()
+        time.sleep(request_gap)
+
+    scd_predicate = player_game_log_requester.temp_table_except_predicate()
+    shot_chart_requester.finalize(scd_predicate)
 
 
 @Gooey(
@@ -277,7 +309,7 @@ def main():
     if default_mode_set:
         default_mode(settings, create_schema, request_gap, seasons, skip_tables)
     if current_season_mode_set:
-        current_season_mode(settings)
+        current_season_mode(settings, request_gap)
 
 
 if __name__ == "__main__":

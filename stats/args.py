@@ -26,7 +26,7 @@ def create_parser():
     mode_parser.add_argument(
         '--current_season_mode',
         help='Mode to refresh the current season. Use this mode on an existing database to update it with the latest data.',
-        action='store_false')
+        action='store_true')
 
     parser.add_argument(
         '--database',
