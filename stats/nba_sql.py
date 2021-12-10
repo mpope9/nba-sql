@@ -25,12 +25,6 @@ import codecs
 
 from gooey import Gooey
 
-#import logging
-#
-#logger = logging.getLogger('peewee')
-#logger.addHandler(logging.StreamHandler())
-#logger.setLevel(logging.DEBUG)
-
 description = """
     nba_sql application.
 
@@ -237,7 +231,7 @@ def do_create_schema(object_list):
         obj.create_ddl()
 
 
-def current_season_mode(settings, request_gap):
+def current_season_mode(settings, request_gap, skip_tables):
     """
     Refreshes the current season in a previously existing database.
     """
@@ -255,26 +249,30 @@ def current_season_mode(settings, request_gap):
     player_game_log_requester.populate_temp()
     time.sleep(request_gap)
 
+    #if 'player_game_log' not in skip_tables:
+    #    player_game_log_requester.insert_from_temp_into_reg()
+
     # TODO: Re-add
     #game_set = player_game_log_requester.get_game_set()
     #game_builder.populate_table(game_set)
 
-    team_player_set = player_game_log_requester.get_team_player_id_set(True)
+    if 'shot_chart_detail' not in skip_tables:
+        team_player_set = player_game_log_requester.get_team_player_id_set(True)
 
-    shot_chart_bar = progress_bar(
-        team_player_set,
-        prefix='Loading Shot Chart Data',
-        suffix='',
-        length=30)
+        shot_chart_bar = progress_bar(
+            team_player_set,
+            prefix='Loading Shot Chart Data',
+            suffix='',
+            length=30)
 
-    for id_tuple in shot_chart_bar:
+        for id_tuple in shot_chart_bar:
 
-        shot_chart_requester.generate_rows(id_tuple[0], id_tuple[1])
-        shot_chart_requester.populate()
-        time.sleep(request_gap)
+            shot_chart_requester.generate_rows(id_tuple[0], id_tuple[1])
+            shot_chart_requester.populate()
+            time.sleep(request_gap)
 
-    scd_predicate = player_game_log_requester.temp_table_except_predicate()
-    shot_chart_requester.finalize(scd_predicate)
+        scd_predicate = player_game_log_requester.temp_table_except_predicate()
+        shot_chart_requester.finalize(scd_predicate)
 
 
 @Gooey(
@@ -309,7 +307,7 @@ def main():
     if default_mode_set:
         default_mode(settings, create_schema, request_gap, seasons, skip_tables)
     if current_season_mode_set:
-        current_season_mode(settings, request_gap)
+        current_season_mode(settings, request_gap, skip_tables)
 
 
 if __name__ == "__main__":
