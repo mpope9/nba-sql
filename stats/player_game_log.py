@@ -188,3 +188,50 @@ class PlayerGameLogRequester(GenericRequester):
             'GAME_ID',
             'GAME_DATE'
         ]
+
+    def insert_from_temp_into_reg(self):
+        """
+        Inserts values from the temp table into the regular table that don't exist
+        in the regular table already.
+
+        THERE HAS TO BE A BETTER WAY OF DEFINING ALL FIELDS.
+        """
+        predicate = PlayerGameLog.select(PlayerGameLog.game_id)
+
+        (PlayerGameLog.insert_from(
+            PlayerGameLogTemp
+                .select()
+                .where(PlayerGameLogTemp.game_id.not_in(predicate)),
+            fields=[
+                PlayerGameLog.player_id,
+                PlayerGameLog.game_id,
+                PlayerGameLog.team_id,
+                PlayerGameLog.season_id,
+                PlayerGameLog.wl,
+                PlayerGameLog.min,
+                PlayerGameLog.fgm,
+                PlayerGameLog.fga,
+                PlayerGameLog.fg_pct,
+                PlayerGameLog.fg3m,
+                PlayerGameLog.fg3a,
+                PlayerGameLog.fg3_pct,
+                PlayerGameLog.ftm,
+                PlayerGameLog.fta,
+                PlayerGameLog.ft_pct,
+                PlayerGameLog.oreb,
+                PlayerGameLog.dreb,
+                PlayerGameLog.reb,
+                PlayerGameLog.ast,
+                PlayerGameLog.tov,
+                PlayerGameLog.stl,
+                PlayerGameLog.blk,
+                PlayerGameLog.blka,
+                PlayerGameLog.pf,
+                PlayerGameLog.pfd,
+                PlayerGameLog.pts,
+                PlayerGameLog.plus_minus,
+                PlayerGameLog.nba_fantasy_pts,
+                PlayerGameLog.dd2,
+                PlayerGameLog.td3
+            ]
+        )).execute()

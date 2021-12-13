@@ -249,12 +249,13 @@ def current_season_mode(settings, request_gap, skip_tables):
     player_game_log_requester.populate_temp()
     time.sleep(request_gap)
 
-    #if 'player_game_log' not in skip_tables:
-    #    player_game_log_requester.insert_from_temp_into_reg()
+    if 'player_game_log' not in skip_tables:
+        player_game_log_requester.insert_from_temp_into_reg()
 
-    # TODO: Re-add
-    #game_set = player_game_log_requester.get_game_set()
-    #game_builder.populate_table(game_set)
+    game_set = player_game_log_requester.get_game_set()
+    # Insert new games and ignore duplicates, becuase its difficult to actually
+    # do this the correct way.
+    game_builder.populate_table(game_set, True)
 
     if 'shot_chart_detail' not in skip_tables:
         team_player_set = player_game_log_requester.get_team_player_id_set(True)
