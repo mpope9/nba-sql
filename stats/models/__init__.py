@@ -2,6 +2,7 @@
 from .Player import Player
 from .Team import Team
 from .Game import Game
+from .Season import Season
 
 # Misc Tables
 from .EventMessageType import EventMessageType
@@ -23,6 +24,7 @@ __all__ = [
     Player,
     Team,
     Game,
+    Season,
     EventMessageType,
     TeamSeason,
     TeamGameLog,

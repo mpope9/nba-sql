@@ -2,6 +2,8 @@
 Misc utilities.
 """
 
+import datetime
+
 
 def season_id_to_int(season_id):
     """
@@ -83,4 +85,26 @@ def progress_bar(iterable, prefix='', suffix='', decimals=1, length=100, fill='â
     if not quiet:
         print()
 
+def generate_valid_seasons():
+    """
+    Genrate the valid seasons to choose from, starting at 1997 to the current date.
+    """
+
+    valid_seasons = []
+    for x in range(1997, datetime.datetime.today().year + 1):
+        valid_season = generate_valid_season(x)
+        valid_seasons.append(valid_season)
+
+    return valid_seasons
+
+def generate_valid_season(season):
+    # Create string, reverse
+    tmp = f"{(season % 100 + 1):02d}"[::-1]
+
+    # Get last two vals of the last string, due to 1999's next season being 100
+    next_year_rev = tmp[0:2]
+
+    # re-reverse.
+    next_year = next_year_rev[::-1]
+    return f"{season}-{next_year}"
 

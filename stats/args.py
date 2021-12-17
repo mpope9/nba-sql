@@ -1,6 +1,5 @@
 from gooey import GooeyParser
-from constants import season_list
-
+from utils import generate_valid_seasons
 
 """
 Creates a parser.
@@ -56,13 +55,14 @@ def create_parser():
         widget='PasswordField',
         default=None)
 
-    last_loadable_season = season_list[-1]
+    valid_seasons = generate_valid_seasons()
+    last_loadable_season = valid_seasons[-1]
 
     parser.add_argument(
         '--seasons',
         dest='seasons',
         default=[last_loadable_season],
-        choices=season_list,
+        choices=valid_seasons,
         widget='Listbox',
         nargs="*",
         help='The seasons flag loads the database with the specified season.  The format of the season should be in the form "YYYY-YY".  The default behavior is loading the current season.')

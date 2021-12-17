@@ -2,6 +2,7 @@ from team import TeamRequester
 from player import PlayerRequester
 from event_message_type import EventMessageTypeBuilder
 from game import GameBuilder
+from season import SeasonBuilder
 
 from player_season import PlayerSeasonRequester
 from player_game_log import PlayerGameLogRequester
@@ -13,7 +14,7 @@ from shot_chart_detail import ShotChartDetailRequester
 
 from constants import season_list, team_ids
 from settings import Settings
-from utils import progress_bar
+from utils import progress_bar, generate_valid_season
 
 from args import create_parser
 
@@ -77,6 +78,7 @@ def default_mode(settings, create_schema, request_gap, seasons, skip_tables):
     team_requester = TeamRequester(settings)
     event_message_type_builder = EventMessageTypeBuilder(settings)
     game_builder = GameBuilder(settings)
+    season_builder = SeasonBuilder(settings)
 
     player_season_requester = PlayerSeasonRequester(settings)
     player_game_log_requester = PlayerGameLogRequester(settings)
@@ -90,6 +92,7 @@ def default_mode(settings, create_schema, request_gap, seasons, skip_tables):
         team_requester,
         event_message_type_builder,
         game_builder,
+        season_builder,
 
         # Dependent Objects
         player_season_requester,
@@ -101,6 +104,8 @@ def default_mode(settings, create_schema, request_gap, seasons, skip_tables):
 
     if create_schema:
         do_create_schema(object_list)
+
+    season_builder.populate(seasons)
 
     if 'team' not in skip_tables:
         print('Populating team table.')
@@ -239,11 +244,14 @@ def current_season_mode(settings, request_gap, skip_tables, quiet):
     if not quiet:
         print("Refreshing the current season in the existing database.")
 
-    season = season_list[-1]
 
     player_game_log_requester = PlayerGameLogRequester(settings)
     game_builder = GameBuilder(settings)
     shot_chart_requester = ShotChartDetailRequester(settings)
+    season_builder = SeasonBuilder(settings)
+
+    season_id = season_builder.current_season_loaded()
+    season = generate_valid_season(season_id)
 
     if not quiet:
         print("Fetching current season data.")
