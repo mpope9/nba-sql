@@ -273,6 +273,7 @@ def main(args):
     seasons = args.seasons
     skip_tables = args.skip_tables
     quiet = args.quiet
+    proxy = args.proxy
 
     if not quiet:
         print(f"Loading seasons: {seasons}.")
@@ -285,7 +286,8 @@ def main(args):
         args.database_host,
         args.batch_size,
         args.sqlite_path,
-        args.quiet)
+        args.quiet,
+        args.proxy)
 
     if default_mode_set:
         default_mode(settings, create_schema, request_gap, seasons, skip_tables)

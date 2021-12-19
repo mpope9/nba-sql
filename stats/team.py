@@ -4,7 +4,7 @@ from general_requester import GenericRequester
 
 class TeamRequester(GenericRequester):
 
-    team_details_url = 'https://stats.nba.com/stats/teamdetails'
+    team_details_url = 'http://stats.nba.com/stats/teamdetails'
 
     def __init__(self, settings):
         """

@@ -1,4 +1,3 @@
-import requests
 import urllib.parse
 
 from db_utils import insert_many
@@ -6,7 +5,6 @@ from utils import get_rowset_mapping, column_names_from_table, season_id_to_int
 from models import PlayerGameLog, PlayerGameLogTemp
 from game import GameEntry
 from general_requester import GenericRequester
-from constants import headers
 
 
 class PlayerGameLogRequester(GenericRequester):
@@ -106,7 +104,7 @@ class PlayerGameLogRequester(GenericRequester):
         # Encode without safe '+', apparently the NBA likes unsafe url params.
         params_str = urllib.parse.urlencode(params, safe=':+')
 
-        response = requests.get(url=self.url, headers=headers, params=params_str).json()
+        response = get_request(self.url, params, self.settings)
 
         result_sets = response['resultSets'][0]
         rowset = result_sets['rowSet']
