@@ -299,11 +299,11 @@ if __name__ == "__main__":
     create_parser(parser)
 
     parser.add_argument(
-        '--default_mode',
+        '--default-mode',
         help='Mode to create the database and load historic data. Use this mode when creating a new database or when trying to load a specific season or a range of seasons.',
         action='store_true')
     parser.add_argument(
-        '--current_season_mode',
+        '--current-season-mode',
         help='Mode to refresh the current season. Use this mode on an existing database to update it with the latest data.',
         action='store_true')
 
