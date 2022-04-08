@@ -137,7 +137,7 @@ The script `nba_sql.py` adds several tables into the database. Loading these tab
 Some of these tables can be skipped by using the `--skip-tables` CLI option. Example:
 
 ```bash
-python stats/nba_sq.py --create-schema --database postgres --skip-tables play_by_play pgtt
+python stats/nba_sql.py --create-schema --database postgres --skip-tables play_by_play pgtt
 ```
 
 ### :computer: Local development
