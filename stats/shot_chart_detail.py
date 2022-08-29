@@ -24,8 +24,6 @@ class ShotChartDetailRequester(GenericRequester):
         Override method to setup temp table.
         """
         super().create_ddl()
-        self.settings.db.bind([ShotChartDetailTemp])
-        self.settings.db.create_tables([ShotChartDetailTemp], safe=True)
 
     def finalize(self, filter_predicate):
         """

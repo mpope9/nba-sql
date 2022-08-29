@@ -36,8 +36,6 @@ class PlayerGameLogRequester(GenericRequester):
         Override method to setup temp table.
         """
         super().create_ddl()
-        self.settings.db.bind([PlayerGameLogTemp])
-        self.settings.db.create_tables([PlayerGameLogTemp], safe=True)
  
     def populate_temp(self):
         """
