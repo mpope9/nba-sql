@@ -46,6 +46,7 @@ class GenericRequester:
 
     def populate(self):
         """
-        Bulk insert.
+        Bulk insert. Remove row cache from object once finished.
         """
         insert_many(self.settings, self.table, self.rows)
+        self.rows = []
