@@ -16,7 +16,7 @@ DB_PASSWORD = os.getenv('DB_PASSWORD')
 
 class Settings:
 
-    def __init__(self, database_type, database_name, database_user, database_password, database_host, batch_size, sqlite_path, quiet):
+    def __init__(self, database_type, database_name, database_user, database_password, database_host, batch_size, sqlite_path, quiet, proxy):
 
         self.user_agent = (
             "Mozilla/5.0 (X11; Linux x86_64) "
@@ -31,6 +31,7 @@ class Settings:
         password = DB_PASSWORD
         host = DB_HOST
         self.batch_size = batch_size
+        self.proxy = proxy
 
         if database_name is not None:
             name = database_name

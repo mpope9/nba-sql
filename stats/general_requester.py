@@ -1,7 +1,4 @@
-import requests
-
-from utils import get_rowset_mapping, column_names_from_table
-from constants import headers
+from utils import get_rowset_mapping, column_names_from_table, get_request
 from db_utils import insert_many
 
 
@@ -31,7 +28,7 @@ class GenericRequester:
         """
 
         # json response
-        response = requests.get(url=self.url, headers=headers, params=params).json()
+        response = get_request(self.url, params, self.settings)
 
         result_sets = response['resultSets'][0]
         rowset = result_sets['rowSet']

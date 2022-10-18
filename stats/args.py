@@ -65,4 +65,10 @@ def create_parser(parser):
         action='store_true',
         help='Setting to define stdout logging level. If set, only "ok" will be printed if ran successfully. This currently only applies to refreshing a db, and not loading one.')
 
+    parser.add_argument(
+        '--proxy',
+        dest='proxy',
+        default=None,
+        help='This will set a proxy for every request. This is useful if you want to run this from one of the major cloud providers. stats.nba.com does not allow traffic from them directly. Example value: "http://127.0.0.1:8888" if you are running a local proxy on port 8888.')
+
     return parser

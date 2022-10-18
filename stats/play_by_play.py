@@ -1,9 +1,8 @@
-import requests
 import urllib.parse
 
 from models import PlayByPlay
-from constants import headers
 from db_utils import insert_many
+from utils import get_request
 
 
 class PlayByPlayRequester:
@@ -30,7 +29,7 @@ class PlayByPlayRequester:
         # Encode without safe '+', apparently the NBA likes unsafe url params.
         params_str = urllib.parse.urlencode(params, safe=':+')
 
-        response = requests.get(url=self.url, headers=headers, params=params_str).json()
+        response = get_request(self.url, params, self.settings)
 
         # pulling just the data we want
         player_info = response['resultSets'][0]['rowSet']

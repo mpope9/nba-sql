@@ -1,10 +1,9 @@
-import requests
 import urllib.parse
 
 from utils import get_rowset_mapping, column_names_from_table, season_id_to_int
 from models import PlayerGeneralTraditionalTotal
 from general_requester import GenericRequester
-from constants import headers
+from utils import get_request
 
 
 class PlayerGeneralTraditionalTotalRequester(GenericRequester):
@@ -31,7 +30,7 @@ class PlayerGeneralTraditionalTotalRequester(GenericRequester):
         params_str = urllib.parse.urlencode(params, safe=':+')
 
         # json response
-        response = requests.get(url=self.url, headers=headers, params=params_str).json()
+        response = get_request(self.url, params, self.settings)
 
         result_sets = response['resultSets'][0]
         rowset = result_sets['rowSet']

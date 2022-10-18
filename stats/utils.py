@@ -2,7 +2,9 @@
 Misc utilities.
 """
 
+import requests
 import datetime
+from constants import headers
 
 
 def season_id_to_int(season_id):
@@ -108,3 +110,14 @@ def generate_valid_season(season):
     next_year = next_year_rev[::-1]
     return f"{season}-{next_year}"
 
+def get_request(url, params, settings):
+
+    if settings.proxy:
+        proxies = {
+            'http': settings.proxy,
+            'https': settings.proxy,
+        }
+    else:
+        proxies = {}
+
+    return requests.get(url=url, headers=headers, params=params, proxies=proxies).json()
