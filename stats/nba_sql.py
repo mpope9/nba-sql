@@ -35,7 +35,7 @@ description = """
     """
 
 # TODO: load these args into the settings class.
-def default_mode(settings, create_schema, request_gap, seasons, skip_tables):
+def default_mode(settings, create_schema, request_gap, seasons, skip_tables, quiet):
     """
     The default mode of loading data. This is for initializing the database
     and loading specific seasons.
@@ -79,7 +79,7 @@ def default_mode(settings, create_schema, request_gap, seasons, skip_tables):
     if 'team' not in skip_tables:
         print('Populating team table.')
 
-        team_bar = progress_bar(team_ids, prefix='team Table Loading', suffix='', length=30)
+        team_bar = progress_bar(team_ids, prefix='team Table Loading', suffix='', length=30, quiet=quiet)
         for team_id in team_bar:
             team_requester.generate_rows(team_id)
             time.sleep(request_gap)
@@ -93,7 +93,7 @@ def default_mode(settings, create_schema, request_gap, seasons, skip_tables):
     if 'player' not in skip_tables:
         print('Populating player data')
 
-        player_bar = progress_bar(seasons, prefix='player Table Loading', suffix='', length=30)
+        player_bar = progress_bar(seasons, prefix='player Table Loading', suffix='', length=30, quiet=quiet)
         for season_id in player_bar:
             player_requester.generate_rows(season_id)
             time.sleep(request_gap)
@@ -103,7 +103,8 @@ def default_mode(settings, create_schema, request_gap, seasons, skip_tables):
         seasons,
         prefix='Loading player_game_log season Data',
         suffix='This one will take a while...',
-        length=30)
+        length=30,
+        quiet=quiet)
 
     # Fetch player_game_log and build game_id set.
     for season_id in player_game_seasons_bar:
@@ -119,7 +120,8 @@ def default_mode(settings, create_schema, request_gap, seasons, skip_tables):
     game_progress_bar = progress_bar(
         game_list,
         prefix='Loading PlayByPlay Data',
-        length=30)
+        length=30,
+        quiet=quiet)
 
     # First, load game specific data.
     if 'game' not in skip_tables:
@@ -166,7 +168,8 @@ def default_mode(settings, create_schema, request_gap, seasons, skip_tables):
             team_player_set,
             prefix='Loading Shot Chart Data',
             suffix='',
-            length=30)
+            length=30,
+            quiet=quiet)
 
         for id_tuple in shot_chart_bar:
 
@@ -180,7 +183,8 @@ def default_mode(settings, create_schema, request_gap, seasons, skip_tables):
         seasons,
         prefix='Loading Seasonal Data',
         suffix='This one will take a while...',
-        length=30)
+        length=30,
+        quiet=quiet)
 
     # Load seasonal data.
     for season_id in season_bar:
@@ -263,10 +267,13 @@ def current_season_mode(settings, request_gap, skip_tables, quiet):
         print("ok")
 
 
-def main(args):
+def main(args, from_gui):
     """
     Main driver for the nba-sql application.
     """
+
+    if from_gui:
+        print("In GUI mode. Note, this mode has minimal feedback. It might take some time to print progress.")
 
     # CMD line args.
     default_mode_set = args.default_mode
@@ -295,7 +302,7 @@ def main(args):
         args.quiet)
 
     if default_mode_set:
-        default_mode(settings, create_schema, request_gap, seasons, skip_tables)
+        default_mode(settings, create_schema, request_gap, seasons, skip_tables, quiet or from_gui)
     if current_season_mode_set:
         current_season_mode(settings, request_gap, skip_tables, quiet)
 
@@ -340,4 +347,4 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    main(args)
+    main(args, False)

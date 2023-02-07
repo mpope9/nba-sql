@@ -96,7 +96,7 @@ def gui_main():
 
     args = parser.parse_args()
 
-    main(args)
+    main(args, True)
 
 
 if __name__ == "__main__":
