@@ -36,11 +36,11 @@ It will take an estimated 6 hours to build the whole database. However, some tab
 
 ## Commandline Reference
 ```
->python stats/nba_sql.py -h
+>python stats/nba_sql.py --help
 usage: nba_sql.py [-h] [--database {mysql,postgres,sqlite}] [--database_name DATABASE_NAME] [--database_host DATABASE_HOST]
                   [--username USERNAME] [--create-schema] [--time-between-requests REQUEST_GAP] [--batch_size BATCH_SIZE]
                   [--sqlite-path SQLITE_PATH] [--quiet] [--default-mode] [--current-season-mode] [--password PASSWORD]
-                  [--seasons [{1997-98,1998-99,1999-00,2000-01,2001-02,2002-03,2003-04,2004-05,2005-06,2006-07,2007-08,2008-09,2009-10,2010-11,2011-12,2012-13,2013-14,2014-15,2015-16,2016-17,2017-18,2018-19,2019-20,2020-21,2021-22,2022-23} ...]]
+                  [--seasons [{1997-98,1998-99,1999-00,2000-01,2001-02,2002-03,2003-04,2004-05,2005-06,2006-07,2007-08,2008-09,2009-10,2010-11,2011-12,2012-13,2013-14,2014-15,2015-16,2016-17,2017-18,2018-19,2019-20,2020-21,2021-22,2022-23,2023-24} ...]]
                   [--skip-tables [{player_season,player_game_log,play_by_play,pgtt,shot_chart_detail,game,event_message_type,team,player,} ...]]
 
 nba-sql
@@ -48,30 +48,34 @@ nba-sql
 optional arguments:
   -h, --help            show this help message and exit
   --database {mysql,postgres,sqlite}
-                        The database flag specifies which database protocol to use. Defaults to "sqlite", but also accepts "postgres" and
-                        "mysql".
+                        The database flag specifies which database protocol to use. Defaults to "sqlite", but also accepts
+                        "postgres" and "mysql".
   --database_name DATABASE_NAME
                         Database Name (Not Needed For SQLite)
   --database_host DATABASE_HOST
                         Database Hostname (Not Needed For SQLite)
   --username USERNAME   Database Username (Not Needed For SQLite)
-  --create-schema       Flag to initialize the database schema before loading data. If the schema already exists then nothing will happen.
+  --create-schema       Flag to initialize the database schema before loading data. If the schema already exists then nothing
+                        will happen.
   --time-between-requests REQUEST_GAP
-                        This flag exists to prevent rate limiting, and injects the desired amount of time inbetween requesting resources.
+                        This flag exists to prevent rate limiting, and injects the desired amount of time inbetween requesting
+                        resources.
   --batch_size BATCH_SIZE
-                        Inserts BATCH_SIZE chunks of rows to the database. This value is ignored when selecting database 'sqlite'.
+                        Inserts BATCH_SIZE chunks of rows to the database. This value is ignored when selecting database
+                        'sqlite'.
   --sqlite-path SQLITE_PATH
                         Setting to define sqlite path.
-  --quiet               Setting to define stdout logging level. If set, only "ok" will be printed if ran successfully. This currently only
-                        applies to refreshing a db, and not loading one.
-  --default-mode        Mode to create the database and load historic data. Use this mode when creating a new database or when trying to
-                        load a specific season or a range of seasons.
+  --quiet               Setting to define stdout logging level. If set, only "ok" will be printed if ran successfully. This
+                        currently only applies to refreshing a db, and not loading one.
+  --default-mode        Mode to create the database and load historic data. Use this mode when creating a new database or when
+                        trying to load a specific season or a range of seasons.
   --current-season-mode
-                        Mode to refresh the current season. Use this mode on an existing database to update it with the latest data.
+                        Mode to refresh the current season. Use this mode on an existing database to update it with the latest
+                        data.
   --password PASSWORD   Database Password (Not Needed For SQLite)
-  --seasons [{1997-98,1998-99,1999-00,2000-01,2001-02,2002-03,2003-04,2004-05,2005-06,2006-07,2007-08,2008-09,2009-10,2010-11,2011-12,2012-13,2013-14,2014-15,2015-16,2016-17,2017-18,2018-19,2019-20,2020-21,2021-22,2022-23} ...]
-                        The seasons flag loads the database with the specified season. The format of the season should be in the form
-                        "YYYY-YY". The default behavior is loading the current season.
+  --seasons [{1997-98,1998-99,1999-00,2000-01,2001-02,2002-03,2003-04,2004-05,2005-06,2006-07,2007-08,2008-09,2009-10,2010-11,2011-12,2012-13,2013-14,2014-15,2015-16,2016-17,2017-18,2018-19,2019-20,2020-21,2021-22,2022-23,2023-24} ...]
+                        The seasons flag loads the database with the specified season. The format of the season should be in
+                        the form "YYYY-YY". The default behavior is loading the current season.
   --skip-tables [{player_season,player_game_log,play_by_play,pgtt,shot_chart_detail,game,event_message_type,team,player,} ...]
                         Use this option to skip loading certain tables.
 ```

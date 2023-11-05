@@ -3,8 +3,7 @@ Misc utilities.
 """
 
 import datetime
-from constants import season_list
-
+from datetime import datetime
 
 def season_id_to_int(season_id):
     """
@@ -88,11 +87,15 @@ def progress_bar(iterable, prefix='', suffix='', decimals=1, length=100, fill='â
 
 def generate_valid_seasons():
     """
-    Genrate the valid seasons to choose from, starting at 1997 to the current date.
+    Genrate the valid seasons to choose from, starting at 1997 to the current season.
+    This assumes that a season begins in October.
     """
 
     valid_seasons = []
-    curr_season = int(season_list[-1].split('-')[1])
+    if datetime.now().month > 10:
+        curr_season = datetime.now().year - 2000 + 1
+    else:
+        curr_season = datetime.now().year - 2000
     for x in range(1997, curr_season + 2000):
         valid_season = generate_valid_season(x)
         valid_seasons.append(valid_season)

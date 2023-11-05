@@ -12,7 +12,7 @@ from player_general_traditional_total import (
 from play_by_play import PlayByPlayRequester
 from shot_chart_detail import ShotChartDetailRequester
 
-from constants import season_list, team_ids
+from constants import team_ids
 from settings import Settings
 from utils import progress_bar, generate_valid_seasons, generate_valid_season
 
