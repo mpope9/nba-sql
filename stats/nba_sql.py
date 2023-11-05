@@ -1,3 +1,24 @@
+"""
+------------------------------------------------------------------------------
+Copyright 2023 Matthew Pope
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+------------------------------------------------------------------------------
+
+
+Main application driver.
+"""
+
 from team import TeamRequester
 from player import PlayerRequester
 from event_message_type import EventMessageTypeBuilder
@@ -33,6 +54,7 @@ description = """
     EX:
         python3 stats/nba_sql.py
     """
+
 
 # TODO: load these args into the settings class.
 def default_mode(settings, create_schema, request_gap, seasons, skip_tables, quiet):
@@ -222,7 +244,10 @@ def current_season_mode(settings, request_gap, skip_tables, quiet):
     season_id = season_builder.current_season_loaded()
 
     if season_id is None:
-        sys.exit("Error: option '--current-season-mode' passed on an uninitialized database. First load a season using the '--default-mode' flag!")
+        sys.exit('''
+            Error: option '--current-season-mode' passed on an uninitialized database.
+            First load a season using the '--default-mode' flag!
+        ''')
 
     if not quiet:
         print("Refreshing the current season in the existing database.")
@@ -280,7 +305,10 @@ def main(args, from_gui):
     current_season_mode_set = args.current_season_mode
 
     if not default_mode_set and not current_season_mode_set:
-        sys.exit("Error: Pass either '--default-mode' to create the database / add a new season, or '--current-season-mode' to refresh the last season loaded in an existing database.")
+        sys.exit('''
+            Error: Pass either '--default-mode' to create the database / add a new season, or
+            '--current-season-mode' to refresh the last season loaded in an existing database.
+        ''')
 
     create_schema = args.create_schema
     request_gap = float(args.request_gap)
@@ -292,9 +320,9 @@ def main(args, from_gui):
         print(f"Loading seasons: {seasons}.")
 
     settings = Settings(
-        args.database_type, 
-        args.database_name, 
-        args.username, 
+        args.database_type,
+        args.database_name,
+        args.username,
         args.password,
         args.database_host,
         args.batch_size,
@@ -314,11 +342,17 @@ if __name__ == "__main__":
 
     parser.add_argument(
         '--default-mode',
-        help='Mode to create the database and load historic data. Use this mode when creating a new database or when trying to load a specific season or a range of seasons.',
+        help='''
+            Mode to create the database and load historic data. Use this mode when creating a
+            new database or when trying to load a specific season or a range of seasons.
+        ''',
         action='store_true')
     parser.add_argument(
         '--current-season-mode',
-        help='Mode to refresh the current season. Use this mode on an existing database to update it with the latest data.',
+        help='''
+            Mode to refresh the current season. Use this mode on an existing database
+            to update it with the latest data.
+        ''',
         action='store_true')
 
     parser.add_argument(
@@ -335,14 +369,28 @@ if __name__ == "__main__":
         default=[last_loadable_season],
         choices=valid_seasons,
         nargs="*",
-        help='The seasons flag loads the database with the specified season.  The format of the season should be in the form "YYYY-YY".  The default behavior is loading the current season.')
+        help='''
+            The seasons flag loads the database with the specified season. The format of the season
+            should be in the form "YYYY-YY".  The default behavior is loading the current season.
+        ''')
 
     parser.add_argument(
         '--skip-tables',
         action='store',
         nargs="*",
         default='',
-        choices=['player_season', 'player_game_log', 'play_by_play', 'pgtt', 'shot_chart_detail', 'game', 'event_message_type', 'team', 'player', ''],
+        choices=[
+            'player_season',
+            'player_game_log',
+            'play_by_play',
+            'pgtt',
+            'shot_chart_detail',
+            'game',
+            'event_message_type',
+            'team',
+            'player',
+            ''
+        ],
         help='Use this option to skip loading certain tables.')
 
     args = parser.parse_args()
