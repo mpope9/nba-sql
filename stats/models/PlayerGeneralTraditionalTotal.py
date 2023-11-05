@@ -79,7 +79,12 @@ class PlayerGeneralTraditionalTotal(Model):
     nba_fantasy_pts_rank = IntegerField(null=True)
     dd2_rank = IntegerField(null=True)
     td3_rank = IntegerField(null=True)
+    
+    # This column is obscelete but it is kept for
+    # backwards compatiblity. It is no longer returned
+    # by the NBA API.
     cfid = IntegerField(null=True)
+
     cfparams = CharField(null=True)
 
     class Meta:

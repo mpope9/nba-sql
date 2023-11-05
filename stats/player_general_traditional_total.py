@@ -42,7 +42,14 @@ class PlayerGeneralTraditionalTotalRequester(GenericRequester):
 
         season_id_int = season_id_to_int(season_id)
         for row in rowset:
-            new_row = {column_name: row[row_index] for column_name, row_index in column_mapping.items()}
+            new_row = {}
+            for column_name, row_index in column_mapping.items():
+                # None here represents a column that exists in the DB object but
+                # not as a row in the response. See: [#97]
+                if row_index is None:
+                    new_row[column_name] = None
+                else:
+                    new_row[column_name] = row[row_index]
             new_row['season_id'] = season_id_int
             self.rows.append(new_row)
 

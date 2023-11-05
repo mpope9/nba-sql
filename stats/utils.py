@@ -18,7 +18,15 @@ def get_rowset_mapping(result_sets, column_names):
     """
 
     headers = result_sets['headers']
-    return {column: headers.index(column.upper()) for column in column_names}
+    mapped = {}
+    for column in column_names:
+        column_upper = column.upper()
+        if column_upper not in headers:
+            mapped[column] = None
+        else:
+            mapped[column] = headers.index(column.upper())
+
+    return mapped
 
 
 def column_names_from_table(db, table_name):
