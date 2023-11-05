@@ -1,3 +1,25 @@
+"""
+------------------------------------------------------------------------------
+Copyright 2023 Matthew Pope
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+------------------------------------------------------------------------------
+
+
+This is a wrapper, to allow building the cmdline executable without
+having to include the full GUI libs.
+"""
+
 from nba_sql import main
 from args import create_parser
 
@@ -10,37 +32,38 @@ import codecs
 import sys
 
 
-"""
-This is a wrapper, to allow building the cmdline executable without
-having to include the full GUI libs.
-"""
-
 # This fixes an issue with Gooey and PyInstaller.
 if sys.stdout.encoding != 'UTF-8':
     sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer, 'strict')
 if sys.stderr.encoding != 'UTF-8':
     sys.stderr = codecs.getwriter('utf-8')(sys.stderr.buffer, 'strict')
 
+
 # This 'fixes' an issue with printing in the Gooey console, kinda sorta not really.
 class Unbuffered(object):
-   def __init__(self, stream):
-       self.stream = stream
-   def write(self, data):
-       self.stream.write(data)
-       self.stream.flush()
-   def writelines(self, datas):
-       self.stream.writelines(datas)
-       self.stream.flush()
-   def __getattr__(self, attr):
-       return getattr(self.stream, attr)
+
+    def __init__(self, stream):
+        self.stream = stream
+
+    def write(self, data):
+        self.stream.write(data)
+        self.stream.flush()
+
+    def writelines(self, datas):
+        self.stream.writelines(datas)
+        self.stream.flush()
+
+    def __getattr__(self, attr):
+        return getattr(self.stream, attr)
+
 
 sys.stdout = Unbuffered(sys.stdout)
 
 
-## Bad practice? Yes. Any other alternative? Not at this point.
-## Only enable Gooey if there are no arguments passed to the script.
-if len(sys.argv)>=2:
-    if not '--ignore-gooey' in sys.argv:
+# Bad practice? Yes. Any other alternative? Not at this point.
+# Only enable Gooey if there are no arguments passed to the script.
+if len(sys.argv) >= 2:
+    if '--ignore-gooey' not in sys.argv:
         sys.argv.append('--ignore-gooey')
 
 
@@ -60,11 +83,18 @@ def gui_main():
         })
     mode_parser.add_argument(
         '--default_mode',
-        help='Mode to create the database and load historic data. Use this mode when creating a new database or when trying to load a specific season or a range of seasons.',
+        help='''
+            Mode to create the database and load historic data.
+            Use this mode when creating a new database or when
+            trying to load a specific season or a range of seasons.
+        ''',
         action='store_true')
     mode_parser.add_argument(
         '--current_season_mode',
-        help='Mode to refresh the current season. Use this mode on an existing database to update it with the latest data.',
+        help='''
+            Mode to refresh the current season. Use this mode on an
+            existing database to update it with the latest data.
+        ''',
         action='store_true')
 
     parser.add_argument(
@@ -83,14 +113,29 @@ def gui_main():
         choices=valid_seasons,
         widget='Listbox',
         nargs="*",
-        help='The seasons flag loads the database with the specified season.  The format of the season should be in the form "YYYY-YY".  The default behavior is loading the current season.')
+        help='''
+            The seasons flag loads the database with the specified season.
+            The format of the season should be in the form "YYYY-YY".
+            The default behavior is loading the current season.
+        ''')
 
     parser.add_argument(
         '--skip-tables',
         action='store',
         nargs="*",
         default='',
-        choices=['player_season', 'player_game_log', 'play_by_play', 'pgtt', 'shot_chart_detail', 'game', 'event_message_type', 'team', 'player', ''],
+        choices=[
+            'player_season',
+            'player_game_log',
+            'play_by_play',
+            'pgtt',
+            'shot_chart_detail',
+            'game',
+            'event_message_type',
+            'team',
+            'player',
+            ''
+        ],
         widget='Listbox',
         help='Use this option to skip loading certain tables.')
 
