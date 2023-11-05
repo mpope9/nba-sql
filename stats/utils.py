@@ -1,9 +1,26 @@
 """
+------------------------------------------------------------------------------
+Copyright 2023 Matthew Pope
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+------------------------------------------------------------------------------
+
+
 Misc utilities.
 """
 
-import datetime
 from datetime import datetime
+
 
 def season_id_to_int(season_id):
     """
@@ -46,6 +63,7 @@ def column_names_from_table(db, table_name):
         mapped.remove('id')
 
     return mapped
+
 
 def chunk_list(in_list, n):
     """
@@ -93,6 +111,7 @@ def progress_bar(iterable, prefix='', suffix='', decimals=1, length=100, fill='â
     if not quiet:
         print()
 
+
 def generate_valid_seasons():
     """
     Genrate the valid seasons to choose from, starting at 1997 to the current season.
@@ -110,6 +129,7 @@ def generate_valid_seasons():
 
     return valid_seasons
 
+
 def generate_valid_season(season):
     # Create string, reverse
     tmp = f"{(season % 100 + 1):02d}"[::-1]
@@ -120,4 +140,3 @@ def generate_valid_season(season):
     # re-reverse.
     next_year = next_year_rev[::-1]
     return f"{season}-{next_year}"
-

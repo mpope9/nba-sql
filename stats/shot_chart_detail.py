@@ -1,8 +1,28 @@
+"""
+------------------------------------------------------------------------------
+Copyright 2023 Matthew Pope
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+------------------------------------------------------------------------------
+
+
+ShotChartDetail builder and requester.
+"""
+
 import urllib.parse
 
-from models import ShotChartDetail, ShotChartDetailTemp, Game
+from models import ShotChartDetail, ShotChartDetailTemp
 from general_requester import GenericRequester
-from peewee import JOIN
 from db_utils import insert_many
 
 
@@ -59,8 +79,7 @@ class ShotChartDetailRequester(GenericRequester):
                             ShotChartDetailTemp.shot_made_flag,
                             ShotChartDetailTemp.htm,
                             ShotChartDetailTemp.vtm
-                    )
-                    .where(ShotChartDetailTemp.game_id.in_(filter_predicate)),
+                ).where(ShotChartDetailTemp.game_id.in_(filter_predicate)),
                 # TODO: Cleaner way to specify all fields but one?
                 fields=[
                     ShotChartDetail.game_id,
@@ -120,7 +139,7 @@ class ShotChartDetailRequester(GenericRequester):
         The base params map.
         """
         return {
-                'AheadBehind': '', 
+                'AheadBehind': '',
                 'ClutchTime': '',
                 'ContextFilter': '',
                 'ContextMeasure': 'FGA',
@@ -152,4 +171,3 @@ class ShotChartDetailRequester(GenericRequester):
                 'VsConference': '',
                 'VsDivision': ''
         }
-
