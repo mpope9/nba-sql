@@ -1,3 +1,25 @@
+"""
+------------------------------------------------------------------------------
+Copyright 2023 Matthew Pope
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+------------------------------------------------------------------------------
+
+
+PlayerGameLog requester and builder. Also takes care of the Game table. See
+class-level docstring.
+"""
+
 import requests
 import urllib.parse
 
@@ -36,13 +58,13 @@ class PlayerGameLogRequester(GenericRequester):
         Override method to setup temp table.
         """
         super().create_ddl()
- 
+
     def populate_temp(self):
         """
         Bulk insert.
         """
         insert_many(self.settings, PlayerGameLogTemp, self.rows)
-        ## TODO: should set rows to []?
+        # TODO: should set rows to []?
 
     def get_game_set(self):
         """
@@ -135,11 +157,11 @@ class PlayerGameLogRequester(GenericRequester):
                     loser = team_id
                 self.game_set.add(
                     GameEntry(
-                        season_id=season_int, 
+                        season_id=season_int,
                         game_id=game_id,
                         game_date=game_date,
                         matchup_in=matchup,
-                        winner=winner, 
+                        winner=winner,
                         loser=loser))
 
             new_row = {column_name: row[row_index] for column_name, row_index in column_mapping.items()}
@@ -198,8 +220,9 @@ class PlayerGameLogRequester(GenericRequester):
 
         (PlayerGameLog.insert_from(
             PlayerGameLogTemp
-                .select()
-                .where(PlayerGameLogTemp.game_id.not_in(predicate)),
+            .select()
+            .where(PlayerGameLogTemp.game_id.not_in(predicate)),
+
             fields=[
                 PlayerGameLog.player_id,
                 PlayerGameLog.game_id,
