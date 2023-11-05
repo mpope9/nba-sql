@@ -1,4 +1,21 @@
 """
+------------------------------------------------------------------------------
+Copyright 2023 Matthew Pope
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+------------------------------------------------------------------------------
+
+
 Constants used in the application.
 """
 
@@ -10,10 +27,11 @@ headers = {
     'Accept': 'application/json, text/plain, */*',
     'x-nba-stats-token': 'true',
     'User-Agent': (
-        #'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) '
-        #'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130'
-        #'Safari/537.36'
-        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36'
+        # 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) '
+        # 'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130'
+        # 'Safari/537.36'
+        '''Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)
+        AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36'''
     ),
     'x-nba-stats-origin': 'stats',
     'Sec-Fetch-Site': 'same-origin',
