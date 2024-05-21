@@ -6,7 +6,7 @@ cryptography
 idna==2.10
 peewee==3.17.0
 pycparser==2.20
-PyMySQL==1.1.0
+PyMySQL==1.1.1
 python-dotenv==1.0.0
 six==1.16.0
 urllib3<2
