@@ -2,9 +2,20 @@
 
 [![Github All Releases](https://img.shields.io/github/downloads/mpope9/nba-sql/total.svg)]()
 
-An application to build a Postgres, MySQL, or SQLite NBA database from the public API.
+An application to build a Postgres, MySQL/MariaDB, or SQLite NBA database from the public API.
 
 The latest Linux, MacOS, and Windows releases [can be found in the releases section.](https://github.com/mpope9/nba-sql/releases/tag/v0.0.12).
+
+Here is an example query which can be used after building the database. Lets say we want to find Russell Westbrook's total Triple-Doubles:
+```SQL
+SELECT SUM(td3) 
+FROM player_game_log 
+LEFT JOIN player ON player.player_id = player_game_log.player_id 
+WHERE player.player_name = 'Russell Westbrook';
+```
+
+Or, you can use the shot chart details for visualizations (eCharts):
+![James Harden Shot Chart 2020-21](image/james-harden-shot-analysis-2020-21.webp)
 
 This DB is still in it's alpha stage and liable to schema changes. v0.1.0 will be the final schema before an official migration system is added. Until then, expect to rebuild the whole DB when trying to refresh stats.
 
@@ -15,20 +26,12 @@ The default behavior is loading the current season into a SQLite database. There
 * [A good place for more information is the wiki](https://github.com/mpope9/nba-sql/wiki).
 * [Looking to contribute? Check the list of open issues!](https://github.com/mpope9/nba-sql/issues)
 
-The following environment variables must be set. There are no commandline arguments to specify these. The following example are connection details for the provided docker-compose database:
-```
+The following environment variables _must_ be set. *There are no commandline arguments to specify these.* The following example are connection details for the provided docker-compose database:
+```bash
 DB_NAME="nba"
 DB_HOST="localhost"
 DB_USER="nba_sql"
 DB_PASSWORD="nba_sql"
-```
-
-Here is an example query which can be used after building the database. Lets say we want to find Russell Westbrook's total Triple-Doubles:
-```
-SELECT SUM(td3) 
-FROM player_game_log 
-LEFT JOIN player ON player.player_id = player_game_log.player_id 
-WHERE player.player_name = 'Russell Westbrook';
 ```
 
 It will take an estimated 6 hours to build the whole database. However, some tables take much longer than others due to the amount of data: `play_by_play`, `shot_chart_detail`, and `pgtt` in particular. These can be skilled with the `--skip-tables` option. Most basic queries can use the `player_game_log` (which is unskippable).
@@ -108,11 +111,11 @@ pip install -r requirements.txt
 ./scripts/create_postgres.sh
 ```
 
-If you want to use MySQL, start it with:
+If you want to use MariaDB, start it with:
 ```
-docker-compose -f docker/docker-compose-mysql.yml up -d
+docker-compose -f docker/docker-compose-mariadb.yml up -d
 
-./scripts/create_mysql.sh
+./scripts/create_maria.sh
 ```
 
 ### :snake: Directly Calling Python
