@@ -51,11 +51,23 @@ class GameBuilder:
         Takes a set of tuples and builds the game table.
         @params:
         game_set   - Required  : Set of GameEntry namedtuple entries (Set)
-        ignore_dups - Optional : Will ignore duplicate entries if present.
+        ignore_dups - Optional : Will ignore duplicate entries if present. This is mainly used to refresh existing seasons.
         """
         rows = []
 
+        # Sometimes the API returns two entries for a game with the teams ids switched.
+        # it is safe to dedup them here before storing them in the game table, which has
+        # a PK on the game_id.
+        game_id_set = set()
+        game_set_deduplicated = set()
         for entry in game_set:
+            if entry.game_id not in game_id_set:
+                game_id_set.add(entry.game_id)
+                game_set_deduplicated.add(entry)
+            else:
+                print(f"Found duplicate game entry: {entry}")
+
+        for entry in game_set_deduplicated:
             # A bit of a hack. We shouldn't rely on data in requests
             # because it could change and invalidate this logic.
             away_team, home_team = entry.matchup_in.split(" @ ")
