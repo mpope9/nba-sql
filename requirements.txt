@@ -1,4 +1,4 @@
-requests==2.31.0
+requests==2.32.2
 certifi==2024.7.4
 cffi==1.14.5
 chardet==4.0.0
