@@ -84,7 +84,8 @@ options:
 * player_general_traditional_total (Also referred to in short as pgtt)
 * shot_chart_detail
 
-An up-to-date ER diagram can be found in [`image/NBA-ER.jpg`](https://github.com/mpope9/nba-sql/blob/master/image/NBA-ER.jpg).
+An up-to-date ER diagram can be found in [`image/NBA-ER.jpg`](https://github.com/mpope9/nba-sql/blob/main/image/NBA-ER.jpg).
+![ERD](image/NBA-ER.jpg)
 
 ## :wrench: Building From Scratch
 
