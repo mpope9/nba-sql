@@ -1,5 +1,5 @@
 requests==2.31.0
-certifi==2023.7.22
+certifi==2024.7.4
 cffi==1.14.5
 chardet==4.0.0
 cryptography
