@@ -4,7 +4,7 @@
 
 An application to build a Postgres, MySQL/MariaDB, or SQLite NBA database from the public API.
 
-The latest Linux, MacOS, and Windows releases [can be found in the releases section.](https://github.com/mpope9/nba-sql/releases/tag/v0.0.12).
+The latest Linux, MacOS, and Windows releases [can be found in the releases section.](https://github.com/mpope9/nba-sql/releases/tag/v0.1.0).
 
 Here is an example query which can be used after building the database. Lets say we want to find Russell Westbrook's total Triple-Doubles:
 ```SQL
