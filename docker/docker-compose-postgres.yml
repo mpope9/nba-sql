@@ -7,7 +7,7 @@ version: "3.7"
 services:
   db:
     env_file: .env
-    image: postgres:12
+    image: postgres:17
     container_name: nba_sql_db
     restart: unless-stopped
     ports:
