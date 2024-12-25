@@ -19,9 +19,7 @@ Here is an example shot visualization using the `shot_chart_detail` table ([Apac
 
 ![James Harden Shot Chart 2020-21](image/james-harden-shot-analysis-2020-21.webp)
 
-This DB is still in it's alpha stage and liable to schema changes. v0.1.0 will be the final schema before an official migration system is added. Until then, expect to rebuild the whole DB when trying to refresh stats.
-
-The default behavior is loading the current season into a SQLite database. There are flags provided use a Postgres or SQLite database, and to specify a specific season. See commandline reference below.
+The default behavior is to load the current season (or update if it already exists) into a SQLite database.
 
 # Getting Started
 
