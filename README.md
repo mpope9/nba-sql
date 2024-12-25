@@ -14,7 +14,8 @@ LEFT JOIN player ON player.player_id = player_game_log.player_id
 WHERE player.player_name = 'Russell Westbrook';
 ```
 
-Or, you can use the shot chart details for visualizations (eCharts):
+Or, you can use the shot chart details for visualizations (using [Apache ECharts](https://echarts.apache.org/en/index.html)):
+
 ![James Harden Shot Chart 2020-21](image/james-harden-shot-analysis-2020-21.webp)
 
 This DB is still in it's alpha stage and liable to schema changes. v0.1.0 will be the final schema before an official migration system is added. Until then, expect to rebuild the whole DB when trying to refresh stats.
