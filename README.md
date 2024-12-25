@@ -13,8 +13,9 @@ FROM player_game_log
 LEFT JOIN player ON player.player_id = player_game_log.player_id 
 WHERE player.player_name = 'Russell Westbrook';
 ```
+Check the [wiki/Example-Queries](https://github.com/mpope9/nba-sql/wiki/Example-Queries) for more example queries.
 
-Or, you can use the shot chart details for visualizations (using [Apache ECharts](https://echarts.apache.org/en/index.html)):
+Here is an example shot visualization using the `shot_chart_detail` table ([Apache ECharts](https://echarts.apache.org/en/index.html)):
 
 ![James Harden Shot Chart 2020-21](image/james-harden-shot-analysis-2020-21.webp)
 
