@@ -21,6 +21,8 @@ Here is an example shot visualization using the `shot_chart_detail` table ([Apac
 
 The default behavior is to load the current season (or update if it already exists) into a SQLite database.
 
+To load data into DuckDB, use the [SQLite Extension](https://duckdb.org/docs/extensions/sqlite.html) after creating a SQLite database.
+
 # Getting Started
 
 * [A good place for more information is the wiki](https://github.com/mpope9/nba-sql/wiki).
