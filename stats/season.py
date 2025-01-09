@@ -48,8 +48,8 @@ class SeasonBuilder:
         insert_many_on_conflict_ignore(self.settings, Season, season_ints)
 
     def current_season_loaded(self):
-        rows = Season.select(fn.MAX(Season.season_id)).execute()
-        season_id = rows[0].season_id
+        rows = self.settings.db.execute_sql("SELECT MAX(season_id) FROM season;").fetchall()
+        season_id = rows[0][0]
         return season_id
 
     def season_to_row(self, season):
