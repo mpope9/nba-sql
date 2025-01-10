@@ -22,6 +22,7 @@ Game model definition.
 from peewee import (
     ForeignKeyField,
     IntegerField,
+    BooleanField,
     DateField,
     Model
 )
@@ -42,6 +43,7 @@ class Game(Model):
     # Indexes
     season_id = IntegerField(index=True, null=False)
 
+    playoff_game = BooleanField(null=True)
     date = DateField(null=False)
 
     class Meta:

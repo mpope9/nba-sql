@@ -25,7 +25,7 @@ from collections import namedtuple
 from db_utils import insert_many, insert_many_on_conflict_ignore
 
 
-GameEntry = namedtuple("GameEntry", "season_id, game_id, game_date, matchup_in, winner, loser")
+GameEntry = namedtuple("GameEntry", "season_id, game_id, game_date, matchup_in, winner, loser, playoff_game")
 
 
 class GameBuilder:
@@ -78,6 +78,7 @@ class GameBuilder:
                     'team_id_home': team_abbrev_mapping[home_team],
                     'team_id_away': team_abbrev_mapping[away_team],
                     'season_id': entry.season_id,
+                    'playoff_game': entry.playoff_game,
                     'date': entry.game_date
                 }
             except KeyError as e:

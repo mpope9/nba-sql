@@ -115,13 +115,14 @@ class PlayerGameLogRequester(GenericRequester):
 
         return expt.select_from(expt.c.game_id)
 
-    def fetch_season(self, season_id):
+    def fetch_season(self, season_id, playoff_games):
         """
         Build GET REST request to the NBA for a season,
-        iterate over the results,
-        store in the database.
+        iterate over the results, store in the database.
+
+        `playoff_games` is a boolean used to load regular or playoff games.
         """
-        params = self.build_params(season_id)
+        params = self.build_params(season_id, playoff_games)
 
         # Encode without safe '+', apparently the NBA likes unsafe url params.
         params_str = urllib.parse.urlencode(params, safe=':+')
@@ -162,16 +163,20 @@ class PlayerGameLogRequester(GenericRequester):
                         game_date=game_date,
                         matchup_in=matchup,
                         winner=winner,
+                        playoff_game=playoff_games,
                         loser=loser))
 
             new_row = {column_name: row[row_index] for column_name, row_index in column_mapping.items()}
             new_row['season_id'] = season_int
             self.rows.append(new_row)
 
-    def build_params(self, season_id):
+    def build_params(self, season_id, playoff_games):
         """
         Create required parameters dict for the request.
         """
+        season_type = 'Regular Season'
+        if playoff_games:
+            season_type = 'Playoffs'
         return {
             'DateFrom': '',
             'DateTo': '',
@@ -189,7 +194,7 @@ class PlayerGameLogRequester(GenericRequester):
             'PlayerID': '',
             'Season': season_id,
             'SeasonSegment': '',
-            'SeasonType': 'Regular Season',
+            'SeasonType': season_type,
             'ShotClockRange': '',
             'TeamID': '',
             'VsConference': '',

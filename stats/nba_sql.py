@@ -123,7 +123,7 @@ def default_mode(settings, create_schema, request_gap, seasons, skip_tables, qui
 
     player_game_seasons_bar = progress_bar(
         seasons,
-        prefix='Loading player_game_log season Data',
+        prefix='Loading player_game_log regular season data',
         suffix='This one will take a while...',
         length=30,
         quiet=quiet)
@@ -131,7 +131,18 @@ def default_mode(settings, create_schema, request_gap, seasons, skip_tables, qui
     # Fetch player_game_log and build game_id set.
     for season_id in player_game_seasons_bar:
 
-        player_game_log_requester.fetch_season(season_id)
+        player_game_log_requester.fetch_season(season_id, False)
+        time.sleep(request_gap)
+
+    player_game_seasons_bar = progress_bar(
+        seasons,
+        prefix='Loading player_game_log playoff season data',
+        suffix='This one will take a while...',
+        length=30,
+        quiet=quiet)
+
+    for season_id in player_game_seasons_bar:
+        player_game_log_requester.fetch_season(season_id, True)
         time.sleep(request_gap)
 
     game_set = player_game_log_requester.get_game_set()
@@ -257,7 +268,9 @@ def current_season_mode(settings, request_gap, skip_tables, quiet):
     if not quiet:
         print("Fetching current season data.")
 
-    player_game_log_requester.fetch_season(season)
+    player_game_log_requester.fetch_season(season, False)
+    time.sleep(request_gap)
+    player_game_log_requester.fetch_season(season, True)
     player_game_log_requester.populate_temp()
     time.sleep(request_gap)
 
