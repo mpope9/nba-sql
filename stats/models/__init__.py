@@ -38,6 +38,7 @@ from .PlayerGameLog import PlayerGameLog
 from .PlayerGameLogTemp import PlayerGameLogTemp
 from .PlayerGeneralTraditionalTotal import PlayerGeneralTraditionalTotal
 from .PlayByPlay import PlayByPlay
+from .PlayByPlayV3 import PlayByPlayV3
 from .ShotChartDetail import ShotChartDetail
 from .ShotChartDetailTemp import ShotChartDetailTemp
 
@@ -54,6 +55,7 @@ __all__ = [
     PlayerGameLogTemp,
     PlayerGeneralTraditionalTotal,
     PlayByPlay,
+    PlayByPlayV3,
     ShotChartDetail,
     ShotChartDetailTemp
 ]

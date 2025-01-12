@@ -36,8 +36,9 @@ DB_USER="nba_sql"
 DB_PASSWORD="nba_sql"
 ```
 
-It will take an estimated 6 hours to build the whole database. However, some tables take much longer than others due to the amount of data: `play_by_play`, `shot_chart_detail`, and `pgtt` in particular. These can be skilled with the `--skip-tables` option. Most basic queries can use the `player_game_log` (which is unskippable).
+It will take an estimated 6 hours to build the whole database. However, some tables take much longer than others due to the amount of data: `play_by_play`, `play_by_playv3` `shot_chart_detail`, and `pgtt` in particular. These can be skilled with the `--skip-tables` option. Most basic queries can use the `player_game_log` (which is unskippable).
 
+Note there are `play_by_play` and `play_by_playv3` tables. `play_by_play` had more detailed descriptions but `play_by_playv3` is broken down in a more sensible way. It is very difficult to correlate which player is associated with a `_description` column in the `play_by_play` table.
 
 ## Commandline Reference
 ```
