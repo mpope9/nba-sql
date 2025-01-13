@@ -31,6 +31,7 @@ from player_general_traditional_total import (
     PlayerGeneralTraditionalTotalRequester
 )
 from play_by_play import PlayByPlayRequester
+from play_by_playv3 import PlayByPlayV3Requester
 from shot_chart_detail import ShotChartDetailRequester
 
 from constants import team_ids
@@ -75,6 +76,7 @@ def default_mode(settings, create_schema, request_gap, seasons, skip_tables, qui
     player_game_log_requester = PlayerGameLogRequester(settings)
     pgtt_requester = PlayerGeneralTraditionalTotalRequester(settings)
     play_by_play_requester = PlayByPlayRequester(settings)
+    play_by_playv3_requester = PlayByPlayV3Requester(settings)
     shot_chart_requester = ShotChartDetailRequester(settings)
 
     object_list = [
@@ -89,6 +91,7 @@ def default_mode(settings, create_schema, request_gap, seasons, skip_tables, qui
         player_season_requester,
         player_game_log_requester,
         play_by_play_requester,
+        play_by_playv3_requester,
         pgtt_requester,
         shot_chart_requester
     ]
@@ -185,6 +188,45 @@ def default_mode(settings, create_schema, request_gap, seasons, skip_tables, qui
                     )
                     rows = []
                 time.sleep(request_gap)
+
+        if rows:
+            print(f"Inserting excess {len(rows)} PlayByPlay rows.")
+            play_by_play_requester.insert_batch(rows, player_id_set)
+
+    game_progress_bar = progress_bar(
+        game_list,
+        prefix='Loading PlayByPlayV3 Data',
+        length=30,
+        quiet=quiet)
+
+    if 'play_by_playv3' not in skip_tables:
+        # Load game dependent data.
+        player_id_set = player_requester.get_id_set()
+        rows = []
+
+        # Okay so this takes a really long time due to rate
+        # limiting and over 25K games. Best we can do so
+        # far is batch the rows into groups of 100K and insert them
+        # in a different thread.
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
+            for game_id in game_progress_bar:
+                new_rows = play_by_playv3_requester.fetch_game(game_id)
+                rows += new_rows
+
+                if len(rows) > 100000:
+                    # We should be good for the race condition here.
+                    # It takes a wee bit to insert 100K rows.
+                    copy_list = copy.deepcopy(rows)
+                    executor.submit(
+                        play_by_playv3_requester.insert_batch,
+                        copy_list
+                    )
+                    rows = []
+                time.sleep(request_gap)
+ 
+        if rows:
+            print(f"Inserting excess {len(rows)} PlayByPlayV3 rows.")
+            play_by_playv3_requester.insert_batch(rows)
 
     if 'player_game_log' not in skip_tables:
 
@@ -396,6 +438,7 @@ if __name__ == "__main__":
             'player_season',
             'player_game_log',
             'play_by_play',
+            'play_by_playv3',
             'pgtt',
             'shot_chart_detail',
             'game',
