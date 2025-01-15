@@ -37,5 +37,13 @@ class Player(Model):
     draft_round = CharField(null=True)
     draft_number = CharField(null=True)
 
+    # Misc player fields.
+    country = CharField(null=True)
+
+    # These should really be seasonal stats but they're fixed at the
+    # time that a player is scraped for now.
+    height = CharField(null=True)
+    weight = CharField(null=True)
+
     class Meta:
         db_table = 'player'
