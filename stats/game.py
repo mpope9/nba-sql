@@ -46,6 +46,13 @@ class GameBuilder:
         """
         return Game.select(Game.game_id)
 
+    def fetch_season_game_id_set(self, season_id):
+        """
+        Returns an ID set for games in the specified season, formatted to match what the
+        NBA's API expects.
+        """
+        return set([str(game.game_id).zfill(10) for game in Game.select(Game.game_id).where(Game.season_id == season_id)])
+
     def populate_table(self, game_set, ignore_dups=False):
         """
         Takes a set of tuples and builds the game table.
