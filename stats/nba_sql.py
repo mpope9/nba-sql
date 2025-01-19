@@ -243,6 +243,7 @@ def current_season_mode(settings, request_gap, skip_tables, quiet):
     Refreshes the current season in a previously existing database.
     """
 
+    player_requester = PlayerRequester(settings)
     player_game_log_requester = PlayerGameLogRequester(settings)
     game_builder = GameBuilder(settings)
     shot_chart_requester = ShotChartDetailRequester(settings)
@@ -266,6 +267,8 @@ def current_season_mode(settings, request_gap, skip_tables, quiet):
     if not quiet:
         print("Fetching current season data.")
 
+    game_set_old = game_builder.fetch_season_game_id_set(season_id)
+
     player_game_log_requester.fetch_season(season, False)
     time.sleep(request_gap)
     player_game_log_requester.fetch_season(season, True)
@@ -277,9 +280,8 @@ def current_season_mode(settings, request_gap, skip_tables, quiet):
 
     game_set = player_game_log_requester.get_game_set()
     game_set_new = set([game[1] for game in game_set])
-    game_set_old = game_builder.fetch_season_game_id_set(season_id)
 
-    game_set_net_new = game_set_old.difference(game_set_new)
+    game_set_net_new = game_set_new.difference(game_set_old)
     print(f"Net new games found: {len(game_set_net_new)}")
 
     # Insert new games and ignore duplicates, becuase its difficult to

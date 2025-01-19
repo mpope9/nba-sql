@@ -86,9 +86,11 @@ class PlayByPlayV3Requester:
             rows.append(new_row)
         return rows
 
-    def insert_batch(self, rows):
+    def insert_batch(self, rows, player_id_set):
         """
         Batch insertion of records.
+
+        In this case the third arg is unused.
         """
         insert_many(self.settings, PlayByPlayV3, rows)
 
