@@ -165,68 +165,22 @@ def default_mode(settings, create_schema, request_gap, seasons, skip_tables, qui
         game_builder.populate_table(game_set)
 
     if 'play_by_play' not in skip_tables:
-        # Load game dependent data.
-        player_id_set = player_requester.get_id_set()
-        rows = []
-
-        # Okay so this takes a really long time due to rate
-        # limiting and over 25K games. Best we can do so
-        # far is batch the rows into groups of 100K and insert them
-        # in a different thread.
-        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
-            for game_id in game_progress_bar:
-                new_rows = play_by_play_requester.fetch_game(game_id)
-                rows += new_rows
-
-                if len(rows) > 100000:
-                    # We should be good for the race condition here.
-                    # It takes a wee bit to insert 100K rows.
-                    copy_list = copy.deepcopy(rows)
-                    executor.submit(
-                        play_by_play_requester.insert_batch,
-                        copy_list, player_id_set
-                    )
-                    rows = []
-                time.sleep(request_gap)
-
-        if rows:
-            print(f"Inserting excess {len(rows)} PlayByPlay rows.")
-            play_by_play_requester.insert_batch(rows, player_id_set)
-
-    game_progress_bar = progress_bar(
-        game_list,
-        prefix='Loading PlayByPlayV3 Data',
-        length=30,
-        quiet=quiet)
+        play_by_play_helper(
+            play_by_play_requester, 
+            player_requester, 
+            game_list, 
+            'Loading PlayByPlay Data',
+            quiet,
+            request_gap)
 
     if 'play_by_playv3' not in skip_tables:
-        # Load game dependent data.
-        player_id_set = player_requester.get_id_set()
-        rows = []
-
-        # Okay so this takes a really long time due to rate
-        # limiting and over 25K games. Best we can do so
-        # far is batch the rows into groups of 100K and insert them
-        # in a different thread.
-        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
-            for game_id in game_progress_bar:
-                new_rows = play_by_playv3_requester.fetch_game(game_id)
-                rows += new_rows
-
-                if len(rows) > 100000:
-                    # We should be good for the race condition here.
-                    # It takes a wee bit to insert 100K rows.
-                    copy_list = copy.deepcopy(rows)
-                    executor.submit(
-                        play_by_playv3_requester.insert_batch,
-                        copy_list
-                    )
-                    rows = []
-                time.sleep(request_gap)
- 
-        if rows:
-            print(f"Inserting excess {len(rows)} PlayByPlayV3 rows.")
-            play_by_playv3_requester.insert_batch(rows)
+        play_by_play_helper(
+            play_by_playv3_requester, 
+            player_requester, 
+            game_list, 
+            'Loading PlayByPlayV3 Data',
+            quiet,
+            request_gap)
 
     if 'player_game_log' not in skip_tables:
 
@@ -289,9 +243,12 @@ def current_season_mode(settings, request_gap, skip_tables, quiet):
     Refreshes the current season in a previously existing database.
     """
 
+    player_requester = PlayerRequester(settings)
     player_game_log_requester = PlayerGameLogRequester(settings)
     game_builder = GameBuilder(settings)
     shot_chart_requester = ShotChartDetailRequester(settings)
+    play_by_play_requester = PlayByPlayRequester(settings)
+    play_by_playv3_requester = PlayByPlayV3Requester(settings)
     season_builder = SeasonBuilder(settings)
 
     season_id = season_builder.current_season_loaded()
@@ -310,6 +267,8 @@ def current_season_mode(settings, request_gap, skip_tables, quiet):
     if not quiet:
         print("Fetching current season data.")
 
+    game_set_old = game_builder.fetch_season_game_id_set(season_id)
+
     player_game_log_requester.fetch_season(season, False)
     time.sleep(request_gap)
     player_game_log_requester.fetch_season(season, True)
@@ -320,9 +279,33 @@ def current_season_mode(settings, request_gap, skip_tables, quiet):
         player_game_log_requester.insert_from_temp_into_reg()
 
     game_set = player_game_log_requester.get_game_set()
+    game_set_new = set([game[1] for game in game_set])
+
+    game_set_net_new = game_set_new.difference(game_set_old)
+    print(f"Net new games found: {len(game_set_net_new)}")
+
     # Insert new games and ignore duplicates, becuase its difficult to
     # do this the correct way.
     game_builder.populate_table(game_set, True)
+
+    game_list = list(game_set_net_new)
+    if 'play_by_play' not in skip_tables:
+        play_by_play_helper(
+            play_by_play_requester, 
+            player_requester, 
+            game_list, 
+            'Loading PlayByPlay Data',
+            quiet,
+            request_gap)
+
+    if 'play_by_playv3' not in skip_tables:
+        play_by_play_helper(
+            play_by_playv3_requester, 
+            player_requester, 
+            game_list, 
+            'Loading PlayByPlayV3 Data',
+            quiet,
+            request_gap)
 
     if 'shot_chart_detail' not in skip_tables:
         team_player_set = player_game_log_requester.get_team_player_id_set(True)
@@ -389,6 +372,39 @@ def main(args, from_gui):
     if current_season_mode_set:
         current_season_mode(settings, request_gap, skip_tables, quiet)
 
+def play_by_play_helper(pbp_requester, player_requester, game_list, display_str, quiet, request_gap):
+    """
+    Helper function to take care of concurrent fetching and insertion.
+    """
+
+    # Load game dependent data.
+    player_id_set = player_requester.get_id_set()
+    rows = []
+    game_progress_bar = progress_bar(game_list, prefix=display_str, length=30, quiet=quiet)
+
+    # Okay so this takes a really long time due to rate
+    # limiting and over 25K games. Best we can do so
+    # far is batch the rows into groups of 100K and insert them
+    # in a different thread.
+    with concurrent.futures.ThreadPoolExecutor(max_workers=2) as executor:
+        for game_id in game_progress_bar:
+            new_rows = pbp_requester.fetch_game(game_id)
+            rows += new_rows
+
+            if len(rows) > 100000:
+                # We should be good for the race condition here.
+                # It takes a wee bit to insert 100K rows.
+                copy_list = copy.deepcopy(rows)
+                executor.submit(
+                    pbp_requester.insert_batch,
+                    copy_list, player_id_set
+                )
+                rows = []
+            time.sleep(request_gap)
+
+    if rows:
+        print(f"Inserting excess {len(rows)} PlayByPlay/PlayByPlayV3 rows.")
+        pbp_requester.insert_batch(rows, player_id_set)
 
 # Default non-gui executable.
 if __name__ == "__main__":
