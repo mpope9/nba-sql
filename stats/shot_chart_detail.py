@@ -45,6 +45,21 @@ class ShotChartDetailRequester(GenericRequester):
         """
         super().create_ddl()
 
+    def temp_table_except_predicate(self):
+        """
+        This runs an EXCEPT between the temp table and the non-temp table to find
+        the new games.
+
+        This is a silly way to do this, but I wanted a quick copy/paste to unblock
+        something else.
+        """
+        regular_query = ShotChartDetail.select(ShotChartDetail.game_id)
+        temp_query = ShotChartDetailTemp.select(ShotChartDetailTemp.game_id)
+
+        expt = temp_query - regular_query
+
+        return expt.select_from(expt.c.game_id)
+
     def finalize(self, filter_predicate):
         """
         This function finishes loading shot_chart_detail by inserting all valid

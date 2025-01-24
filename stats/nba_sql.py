@@ -323,7 +323,7 @@ def current_season_mode(settings, request_gap, skip_tables, quiet):
             shot_chart_requester.populate()
             time.sleep(request_gap)
 
-        scd_predicate = player_game_log_requester.temp_table_except_predicate()
+        scd_predicate = shot_chart_requester.temp_table_except_predicate()
         shot_chart_requester.finalize(scd_predicate)
 
     if quiet:
