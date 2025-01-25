@@ -23,6 +23,7 @@ from peewee import (
     IntegerField,
     BooleanField,
     FloatField,
+    DecimalField,
     CharField,
     Model
 )
@@ -53,8 +54,8 @@ class ShotChartDetailTemp(Model):
     shot_zone_area = CharField(null=True)
     shot_zone_range = CharField(null=True)
     shot_distance = FloatField(null=True)
-    loc_x = FloatField(null=True)
-    loc_y = FloatField(null=True)
+    loc_x = DecimalField(null=True)
+    loc_y = DecimalField(null=True)
     shot_attempted_flag = BooleanField(null=True)
     shot_made_flag = BooleanField(null=True)
     htm = CharField(null=True)
